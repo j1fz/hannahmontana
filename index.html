@@ -163,7 +163,7 @@
   </div>
 
   <!-- Top Navigation Bar (Responsive Mobile & Desktop) -->
-  <header class="fixed top-0 inset-x-0 z-30 pt-[max(0.6rem,env(safe-area-inset-top))] px-2.5 pb-2 sm:p-5 flex flex-col items-center pointer-events-none gap-1.5 sm:gap-2">
+  <header class="fixed top-0 inset-x-0 z-30 pt-[max(0.6rem,env(safe-area-inset-top))] px-2.5 pb-2 sm:p-5 flex flex-col items-center pointer-events-none gap-1 sm:gap-2">
     <div class="w-full max-w-4xl flex items-center justify-between gap-1.5 pointer-events-auto">
       <button onclick="sailToIsland('haven', true)" class="pill-surface px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full flex items-center gap-2 transition hover:scale-[1.02] active:scale-95 group shrink-0">
         <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-stone-900 text-amber-400 flex items-center justify-center transition group-hover:rotate-12 shrink-0">
@@ -181,7 +181,7 @@
             <span class="eq-bar eq-bar-2"></span>
             <span class="eq-bar eq-bar-3"></span>
           </div>
-          <span id="audio-label">Play BGM</span>
+          <span id="audio-label">Sea Shanty</span>
         </button>
 
         <button id="btn-theme" onclick="toggleSkyTheme()" title="Siang / Malam" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full pill-surface flex items-center justify-center hover:scale-105 active:scale-95 transition">
@@ -636,97 +636,83 @@
 
     function createJollyRogerTexture() {
       const c = document.createElement('canvas');
-      c.width = 1024;
-      c.height = 768;
+      c.width = 512;
+      c.height = 512;
       const ctx = c.getContext('2d');
 
       // Deep Pirate Fabric Background
       ctx.fillStyle = '#141413';
       ctx.fillRect(0, 0, c.width, c.height);
 
-      // Double Golden Ornate Border
-      ctx.strokeStyle = 'rgba(245, 158, 11, 0.55)';
-      ctx.lineWidth = 18;
-      ctx.strokeRect(28, 28, c.width - 56, c.height - 56);
-      ctx.strokeStyle = 'rgba(245, 158, 11, 0.25)';
-      ctx.lineWidth = 6;
-      ctx.strokeRect(52, 52, c.width - 104, c.height - 104);
+      // Golden Ornate Border
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 12;
+      ctx.strokeRect(18, 18, c.width - 36, c.height - 36);
 
       ctx.save();
       ctx.translate(c.width / 2, c.height / 2);
 
-      // Crossed Cutlass Swords / Bones
-      ctx.strokeStyle = '#f5f5f4';
-      ctx.fillStyle = '#f5f5f4';
-      ctx.lineWidth = 32;
+      // Crossed Bones
+      ctx.strokeStyle = '#e5e7eb';
+      ctx.fillStyle = '#e5e7eb';
+      ctx.lineWidth = 22;
       ctx.lineCap = 'round';
 
-      [-0.52, 0.52].forEach(angle => {
+      [-0.6, 0.6].forEach(angle => {
         ctx.save();
         ctx.rotate(angle);
         ctx.beginPath();
-        ctx.moveTo(-225, 0);
-        ctx.lineTo(225, 0);
+        ctx.moveTo(-130, 0);
+        ctx.lineTo(130, 0);
         ctx.stroke();
-        [-225, 225].forEach(endX => {
+        [-130, 130].forEach(endX => {
           ctx.beginPath();
-          ctx.arc(endX, -22, 24, 0, Math.PI * 2);
-          ctx.arc(endX, 22, 24, 0, Math.PI * 2);
+          ctx.arc(endX, -14, 16, 0, Math.PI * 2);
+          ctx.arc(endX, 14, 16, 0, Math.PI * 2);
           ctx.fill();
         });
         ctx.restore();
       });
 
-      // Crisp Skull Head
+      // Skull Head
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.arc(0, -34, 112, 0, Math.PI * 2);
+      ctx.arc(0, -22, 68, 0, Math.PI * 2);
       ctx.fill();
 
       // Jaw
       ctx.beginPath();
-      ctx.roundRect(-62, 32, 124, 76, 20);
+      ctx.roundRect(-38, 22, 76, 46, 12);
       ctx.fill();
 
-      // Red Captain Bandana + Knot
+      // Red Captain Bandana
       ctx.fillStyle = '#dc2626';
       ctx.beginPath();
-      ctx.arc(0, -44, 114, Math.PI * 1.06, Math.PI * 1.94);
-      ctx.fill();
-
-      // Golden Crown / Emblem Accent on Bandana
-      ctx.fillStyle = '#fbbf24';
-      ctx.beginPath();
-      ctx.moveTo(-28, -98);
-      ctx.lineTo(-14, -124);
-      ctx.lineTo(0, -104);
-      ctx.lineTo(14, -124);
-      ctx.lineTo(28, -98);
-      ctx.closePath();
+      ctx.arc(0, -28, 70, Math.PI * 1.05, Math.PI * 1.95);
       ctx.fill();
 
       // Eye Sockets
       ctx.fillStyle = '#141413';
       ctx.beginPath();
-      ctx.arc(-42, -26, 26, 0, Math.PI * 2);
-      ctx.arc(42, -26, 26, 0, Math.PI * 2);
+      ctx.arc(-24, -16, 15, 0, Math.PI * 2);
+      ctx.arc(24, -16, 15, 0, Math.PI * 2);
       ctx.fill();
 
-      // Nose Cavity
+      // Nose
       ctx.beginPath();
-      ctx.moveTo(0, -2);
-      ctx.lineTo(-17, 28);
-      ctx.lineTo(17, 28);
+      ctx.moveTo(0, 2);
+      ctx.lineTo(-10, 18);
+      ctx.lineTo(10, 18);
       ctx.closePath();
       ctx.fill();
 
       // Teeth lines
       ctx.strokeStyle = '#141413';
-      ctx.lineWidth = 8;
-      [-32, 0, 32].forEach(tx => {
+      ctx.lineWidth = 5;
+      [-18, 0, 18].forEach(tx => {
         ctx.beginPath();
-        ctx.moveTo(tx, 58);
-        ctx.lineTo(tx, 102);
+        ctx.moveTo(tx, 38);
+        ctx.lineTo(tx, 62);
         ctx.stroke();
       });
 
@@ -777,7 +763,7 @@
     }
 
     // ============================================================================
-    // DETAILED ISLAND BUILDERS (TAVERNS, FORTRESS, PALMS, LANTERNS, CLOUDS, BIRDS)
+    // DETAILED ISLAND BUILDERS
     // ============================================================================
     const islandPositions3D = {
       haven: new THREE.Vector3(-4.5, 2.2, 1.5),
@@ -809,23 +795,18 @@
 
     function createMiniCharacter(shirtMat, hasHat = false, hasSword = false) {
       const charGroup = new THREE.Group();
-
-      // Boots/Legs
       const legs = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.12, 0.2, 7), materials.pirateBlack);
       legs.position.y = 0.1;
       charGroup.add(legs);
 
-      // Torso
       const body = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.34, 8), shirtMat);
       body.position.y = 0.34;
       charGroup.add(body);
 
-      // Belt & Gold Buckle
       const belt = new THREE.Mesh(new THREE.CylinderGeometry(0.155, 0.155, 0.06, 8), materials.woodDark);
       belt.position.y = 0.24;
       charGroup.add(belt);
 
-      // Arms
       [-0.18, 0.18].forEach((ax, idx) => {
         const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.04, 0.26, 6), shirtMat);
         arm.position.set(ax, 0.34, 0);
@@ -833,12 +814,10 @@
         charGroup.add(arm);
       });
 
-      // Head
       const head = new THREE.Mesh(new THREE.SphereGeometry(0.135, 10, 10), materials.skin);
       head.position.y = 0.6;
       charGroup.add(head);
 
-      // Eyes
       [-0.045, 0.045].forEach(ex => {
         const eye = new THREE.Mesh(new THREE.SphereGeometry(0.02, 6, 6), materials.pirateBlack);
         eye.position.set(ex, 0.62, 0.12);
@@ -846,7 +825,6 @@
       });
 
       if (hasHat) {
-        // Tricorn Pirate Hat + Gold Trim
         const hatBrim = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.05, 3), materials.pirateBlack);
         hatBrim.position.y = 0.72;
         charGroup.add(hatBrim);
@@ -872,14 +850,12 @@
       base.position.y = 0.16;
       chest.add(base);
 
-      // Curved Lid
       const lid = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.21, 0.6, 8, 1, false, 0, Math.PI), materials.woodMid);
       lid.rotation.z = Math.PI / 2;
       lid.position.set(0, 0.32, isOpen ? -0.08 : 0);
       if (isOpen) lid.rotation.x = -0.55;
       chest.add(lid);
 
-      // Gold Bands & Lock
       [-0.22, 0.22].forEach(bx => {
         const band = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.34, 0.44), materials.gold);
         band.position.set(bx, 0.17, 0);
@@ -916,7 +892,6 @@
 
     function createPalmTree(scale = 1) {
       const tree = new THREE.Group();
-      // Segmented Curved Trunk
       const segments = 5;
       for (let i = 0; i < segments; i++) {
         const rTop = 0.16 - i * 0.018;
@@ -929,7 +904,6 @@
 
       const topPos = new THREE.Vector3(Math.sin(4 * 0.25) * 0.18, 1.9, 0);
 
-      // Coconuts
       for (let c = 0; c < 3; c++) {
         const coco = new THREE.Mesh(new THREE.SphereGeometry(0.08, 6, 6), materials.woodDark);
         const angle = (c / 3) * Math.PI * 2;
@@ -937,7 +911,6 @@
         tree.add(coco);
       }
 
-      // 6 Lush Fronds
       for (let f = 0; f < 6; f++) {
         const frondGroup = new THREE.Group();
         frondGroup.position.copy(topPos);
@@ -957,41 +930,33 @@
 
     function createTavernHouse() {
       const house = new THREE.Group();
-
-      // Stone Foundation
       const found = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.22, 1.45), materials.rock);
       found.position.y = 0.11;
       house.add(found);
 
-      // Main Timber-Framed Walls
       const walls = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.15, 1.3), materials.houseWall);
       walls.position.y = 0.78;
       house.add(walls);
 
-      // Corner Wood Pillars
       [[-0.8, -0.65], [0.8, -0.65], [-0.8, 0.65], [0.8, 0.65]].forEach(([px, pz]) => {
         const beam = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.18, 0.1), materials.woodDark);
         beam.position.set(px, 0.78, pz);
         house.add(beam);
       });
 
-      // Pitched Roof + Overhang
       const roof = new THREE.Mesh(new THREE.ConeGeometry(1.42, 0.95, 4), materials.houseRoof);
       roof.position.y = 1.82;
       roof.rotation.y = Math.PI / 4;
       house.add(roof);
 
-      // Stone Chimney
       const chimney = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.75, 0.28), materials.rockDark);
       chimney.position.set(0.45, 1.95, -0.25);
       house.add(chimney);
 
-      // Wooden Door + Frame
       const door = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.68, 0.08), materials.woodDark);
       door.position.set(0, 0.55, 0.64);
       house.add(door);
 
-      // Glowing Tavern Windows
       [-0.48, 0.48].forEach(wx => {
         const winFrame = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.28, 0.08), materials.woodDark);
         winFrame.position.set(wx, 0.85, 0.64);
@@ -1002,7 +967,6 @@
         house.add(winPane);
       });
 
-      // Side Window
       const sideWin = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.28, 0.28), materials.windowGlow);
       sideWin.position.set(0.8, 0.85, 0);
       house.add(sideWin);
@@ -1013,8 +977,6 @@
 
     function createDetailedDock(length = 2.6) {
       const dockGroup = new THREE.Group();
-
-      // Support Pilings + Rope Bollards
       const postPositions = [
         [-0.48, -length * 0.35], [0.48, -length * 0.35],
         [-0.48, 0], [0.48, 0],
@@ -1032,7 +994,6 @@
         }
       });
 
-      // Individual Wooden Planks
       const numPlanks = 9;
       for (let i = 0; i < numPlanks; i++) {
         const plank = new THREE.Mesh(
@@ -1043,7 +1004,6 @@
         dockGroup.add(plank);
       }
 
-      // Hanging Dock Lantern Post at End
       const lampPost = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 1.15, 6), materials.woodDark);
       lampPost.position.set(0.48, 0.95, length * 0.38);
       dockGroup.add(lampPost);
@@ -1064,7 +1024,6 @@
       const group = new THREE.Group();
       group.position.set(x, 0, z);
 
-      // 1. Shallow Turquoise Lagoon + Animated Coastal Foam Ring
       const lagoon = new THREE.Mesh(new THREE.CircleGeometry(radius * 1.52, 28), materials.lagoon);
       lagoon.rotation.x = -Math.PI / 2;
       lagoon.position.y = 0.03;
@@ -1076,7 +1035,6 @@
       group.add(foam);
       animatedProps.push({ mesh: foam, baseY: 0.05, phase: x * 0.3, scalePulse: true });
 
-      // 2. Layered Beach Sand + Terraced Grass
       const wetSand = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.98, radius * 1.18, 0.35, 14), materials.sandWet);
       wetSand.position.y = 0.14;
       wetSand.userData = { islandId: id };
@@ -1101,7 +1059,6 @@
       clickableIslandObjects.push(grassUpper);
       group.add(grassUpper);
 
-      // 3. Detailed Wooden Pier / Dock
       const dock = createDetailedDock(2.5);
       dock.position.set(0, 0, radius * 1.02);
       dock.traverse(c => {
@@ -1112,7 +1069,6 @@
       });
       group.add(dock);
 
-      // 4. Perimeter Coastal Rocks & Bushes
       for (let r = 0; r < 5; r++) {
         const ang = (r / 5) * Math.PI * 1.5 - 2.3;
         const dist = radius * (0.78 + (r % 2) * 0.15);
@@ -1122,7 +1078,6 @@
         group.add(cliffRock);
       }
 
-      // 5. Island-Specific Architecture, Props & Characters
       if (id === 'haven') {
         const house = createTavernHouse();
         house.position.set(-0.35, 1.12, -0.35);
@@ -1152,7 +1107,6 @@
         barrel1.position.set(0.65, 1.12, -0.2);
         group.add(barrel1);
       } else if (id === 'vault') {
-        // Stone Treasure Fortress Ruin Arch + Vault
         const stonePlatform = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.6, 0.28, 8), materials.rock);
         stonePlatform.position.set(-0.15, 1.22, -0.2);
         group.add(stonePlatform);
@@ -1162,7 +1116,6 @@
         chestMain.position.set(-0.15, 1.36, -0.2);
         group.add(chestMain);
 
-        // Sparkling Gold Doubloon Mounds
         [[-1.05, -0.35, 0.55], [0.75, -0.5, 0.42], [-0.7, 0.55, 0.35]].forEach(([gx, gz, gs]) => {
           const goldPile = new THREE.Mesh(new THREE.DodecahedronGeometry(gs, 1), materials.gold);
           goldPile.scale.y = 0.65;
@@ -1208,7 +1161,6 @@
         barrel.position.set(1.15, 0.98, 0.45);
         group.add(barrel);
       } else if (id === 'signal') {
-        // Multi-tiered Lighthouse / Signal Watchtower
         const towerBase = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.78, 1.1, 8), materials.rock);
         towerBase.position.set(0, 1.55, -0.25);
         group.add(towerBase);
@@ -1254,7 +1206,6 @@
     buildPirateIsland('log', 11.5, -10.5, 3.2);
     buildPirateIsland('signal', 10.5, 11.5, 3.0);
 
-    // Decorative Sea Archipelagos, Buoys & Rocks
     [
       [-12, 8], [4, -15], [-14, -18], [18, 2], [-23, 4], [2, 16], [-8, -11], [19, -16]
     ].forEach(([rx, rz], i) => {
@@ -1274,7 +1225,6 @@
       scene.add(rockGroup);
     });
 
-    // Soft Procedural Sky Clouds & Circling Sea Birds
     function createCloudCluster(x, y, z, scale) {
       const cGroup = new THREE.Group();
       cGroup.position.set(x, y, z);
@@ -1315,7 +1265,7 @@
     createSeagull(11.5, -10.5, 4.5, 0.8, 3.7);
 
     // ============================================================================
-    // CAPTAIN REZTROID'S DETAILED PIRATE GALLEON SHIP ("THE BLACK REVENGE")
+    // CAPTAIN REZTROID'S SHIP ("THE BLACK REVENGE")
     // ============================================================================
     const shipGroup = new THREE.Group();
     shipGroup.position.set(-4.5, 0.15, 6.5);
@@ -1325,7 +1275,6 @@
     const shipModel = new THREE.Group();
     shipGroup.add(shipModel);
 
-    // 1. Stepped Multi-Layer Wooden Hull + Keel
     const lowerHull = new THREE.Mesh(new THREE.BoxGeometry(1.32, 0.45, 3.1), materials.woodDark);
     lowerHull.position.y = 0.26;
     shipModel.add(lowerHull);
@@ -1334,24 +1283,20 @@
     upperHull.position.y = 0.58;
     shipModel.add(upperHull);
 
-    // Deck Floor Planks
     const mainDeck = new THREE.Mesh(new THREE.BoxGeometry(1.46, 0.08, 3.3), materials.woodLight);
     mainDeck.position.y = 0.8;
     shipModel.add(mainDeck);
 
-    // Side Bulwark Railings
     [-0.74, 0.74].forEach(rx => {
       const rail = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.18, 3.2), materials.woodDark);
       rail.position.set(rx, 0.88, 0);
       shipModel.add(rail);
     });
 
-    // Gold Trim Stripe Around Hull
     const hullTrim = new THREE.Mesh(new THREE.BoxGeometry(1.62, 0.1, 3.5), materials.hullTrim);
     hullTrim.position.y = 0.68;
     shipModel.add(hullTrim);
 
-    // Tapered Front Bow Wedge + Golden Prow Figurehead + Bowsprit
     const bowWedge = new THREE.Mesh(new THREE.ConeGeometry(0.95, 1.25, 4), materials.woodMid);
     bowWedge.rotation.x = Math.PI / 2;
     bowWedge.rotation.z = Math.PI / 4;
@@ -1368,12 +1313,10 @@
     figurehead.position.set(0, 0.68, 2.35);
     shipModel.add(figurehead);
 
-    // Rear Rudder Blade
     const rudder = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.65, 0.38), materials.woodDark);
     rudder.position.set(0, 0.35, -1.82);
     shipModel.add(rudder);
 
-    // 2. Captain's Stern Cabin + Windows + Quarterdeck Balustrade + Helm Wheel
     const sternCabin = new THREE.Mesh(new THREE.BoxGeometry(1.44, 0.72, 1.18), materials.woodLight);
     sternCabin.position.set(0, 1.05, -1.12);
     shipModel.add(sternCabin);
@@ -1382,19 +1325,16 @@
     cabinRoof.position.set(0, 1.42, -1.12);
     shipModel.add(cabinRoof);
 
-    // Glowing Rear Cabin Windows
     [-0.36, 0, 0.36].forEach(wx => {
       const rearWin = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.24, 0.08), materials.windowGlow);
       rearWin.position.set(wx, 1.08, -1.7);
       shipModel.add(rearWin);
     });
 
-    // Ornate Rear Brass Lantern
     const sternLantern = new THREE.Mesh(new THREE.OctahedronGeometry(0.16, 0), materials.lanternGlow);
     sternLantern.position.set(0, 1.62, -1.75);
     shipModel.add(sternLantern);
 
-    // Ship's Helm / Steering Wheel on Quarterdeck
     const helmStand = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 0.38, 6), materials.woodDark);
     helmStand.position.set(0, 1.62, -0.62);
     shipModel.add(helmStand);
@@ -1403,12 +1343,10 @@
     helmWheel.position.set(0, 1.78, -0.58);
     shipModel.add(helmWheel);
 
-    // 3. Masts, Crow's Nest, Cross-Yards & Billowing Sails
     const mainMast = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.11, 3.6, 8), materials.woodLight);
     mainMast.position.set(0, 2.15, 0.12);
     shipModel.add(mainMast);
 
-    // Crow's Nest Lookout Basket + Top Pennant Flag
     const crowsNest = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.18, 0.26, 9), materials.woodDark);
     crowsNest.position.set(0, 3.45, 0.12);
     shipModel.add(crowsNest);
@@ -1418,7 +1356,6 @@
     topPennant.position.set(-0.26, 3.92, 0.12);
     shipModel.add(topPennant);
 
-    // Horizontal Wooden Yardarms
     const mainYardTop = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.1, 7), materials.woodDark);
     mainYardTop.rotation.z = Math.PI / 2;
     mainYardTop.position.set(0, 2.92, 0.2);
@@ -1438,7 +1375,6 @@
     foreYardTop.position.set(0, 2.22, 1.32);
     shipModel.add(foreYardTop);
 
-    // Curved Billowing Sails (Wind-filled curve)
     function createCurvedSailGeo(w, h, curveDepth) {
       const geo = new THREE.PlaneGeometry(w, h, 12, 8);
       const pos = geo.attributes.position;
@@ -1460,7 +1396,6 @@
     foreSail.position.set(0, 1.72, 1.34);
     shipModel.add(foreSail);
 
-    // Rope Rigging Lines
     const riggingPoints = [
       new THREE.Vector3(0, 3.5, 0.12), new THREE.Vector3(0, 1.15, 2.85),
       new THREE.Vector3(0, 3.5, 0.12), new THREE.Vector3(-0.72, 0.9, 0.12),
@@ -1471,7 +1406,6 @@
     const riggingLines = new THREE.LineSegments(rigGeo, materials.rope);
     shipModel.add(riggingLines);
 
-    // 4. 6 Golden Broadside Cannons + Iron Mounts + Bow Anchors
     [-0.82, 0.82].forEach(sideX => {
       [-0.45, 0.18, 0.82].forEach(cz => {
         const cannon = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.085, 0.42, 8), materials.gold);
@@ -1480,14 +1414,12 @@
         shipModel.add(cannon);
       });
 
-      // Bow Anchor
       const anchor = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.03, 5, 8, Math.PI), materials.iron);
       anchor.position.set(sideX * 0.95, 0.55, 1.55);
       anchor.rotation.y = Math.PI / 2;
       shipModel.add(anchor);
     });
 
-    // 5. Captain Reztroid & Crew on Deck
     const captainChar = createMiniCharacter(materials.pirateRed, true, true);
     captainChar.position.set(0, 1.44, -0.92);
     shipModel.add(captainChar);
@@ -1498,13 +1430,12 @@
 
     enableShadowRecursive(shipModel);
 
-    // Warm Deck Lantern Light
     const shipLight = new THREE.PointLight(0xffb74d, 1.35, 9.5);
     shipLight.position.set(0, 1.75, -0.8);
     shipModel.add(shipLight);
 
     // ============================================================================
-    // SMOOTH NAVIGATION, AUTOPILOT, WAKE TRAIL & CANNON FX
+    // NAVIGATION & CONTROLS
     // ============================================================================
     const shipState = {
       targetX: -4.5,
@@ -1512,8 +1443,7 @@
       targetRot: null,
       hasTarget: false,
       vx: 0,
-      vz: 0,
-      rotVel: 0
+      vz: 0
     };
 
     const keysPressed = {};
@@ -1643,7 +1573,6 @@
       ensureFirstInteractionAudio();
       playCannonSound(false);
 
-      // Gentle deck recoil without sinking ship
       gsap.fromTo(shipModel.rotation, { z: 0.14 }, { z: 0, duration: 0.45, ease: 'elastic.out(1, 0.4)' });
 
       [-1, 1].forEach(side => {
@@ -1860,18 +1789,31 @@
     }
 
     // ============================================================================
-    // CLEAN WEB AUDIO API SEA SHANTY BGM & SOUND FX
+    // AUTHENTIC PIRATE SEA SHANTY AUDIO SYNTHESIS
     // ============================================================================
     let audioCtx = null;
     let isPlayingBGM = false;
     let shantyTimer = null;
     let hasAutoStartedBGM = false;
 
-    const SHANTY_NOTES = [
-      293.66, 349.23, 392.00, 440.00, 392.00, 349.23, 329.63, 293.66,
-      293.66, 440.00, 523.25, 440.00, 392.00, 349.23, 329.63, 293.66
+    // Classic Sea Shanty progression (D Minor / Dorian mode: D4, F4, G4, A4, C5, A4, G4, F4)
+    const SHANTY_MELODY = [
+      { f: 293.66, dur: 0.35 }, // D4
+      { f: 349.23, dur: 0.35 }, // F4
+      { f: 392.00, dur: 0.70 }, // G4
+      { f: 440.00, dur: 0.35 }, // A4
+      { f: 523.25, dur: 0.70 }, // C5
+      { f: 440.00, dur: 0.35 }, // A4
+      { f: 392.00, dur: 0.35 }, // G4
+      { f: 349.23, dur: 0.70 }, // F4
+      { f: 392.00, dur: 0.35 }, // G4
+      { f: 440.00, dur: 0.35 }, // A4
+      { f: 392.00, dur: 0.35 }, // G4
+      { f: 349.23, dur: 0.35 }, // F4
+      { f: 329.63, dur: 0.35 }, // E4
+      { f: 293.66, dur: 1.05 }  // D4
     ];
-    let shantyIndex = 0;
+    let shantyStep = 0;
 
     function initAudioContext() {
       if (!audioCtx) {
@@ -1883,25 +1825,50 @@
       }
     }
 
-    function playNextShantyNote() {
+    function playSeaShantyNote() {
       if (!isPlayingBGM || !audioCtx) return;
       const now = audioCtx.currentTime;
-      const freq = SHANTY_NOTES[shantyIndex % SHANTY_NOTES.length];
-      shantyIndex++;
+      const note = SHANTY_MELODY[shantyStep % SHANTY_MELODY.length];
+      shantyStep++;
 
+      // Lead Accordion / Fiddle synth voice (sawtooth + lowpass filter)
       const osc = audioCtx.createOscillator();
+      const filter = audioCtx.createBiquadFilter();
       const gain = audioCtx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, now);
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(note.f, now);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(750, now);
+      filter.frequency.exponentialRampToValueAtTime(350, now + note.dur * 0.8);
 
       gain.gain.setValueAtTime(0.001, now);
-      gain.gain.exponentialRampToValueAtTime(0.045, now + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
+      gain.gain.linearRampToValueAtTime(0.06, now + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + note.dur * 0.95);
 
-      osc.connect(gain);
+      osc.connect(filter);
+      filter.connect(gain);
       gain.connect(audioCtx.destination);
+
       osc.start(now);
-      osc.stop(now + 0.38);
+      osc.stop(now + note.dur);
+
+      // Bass drone accompaniment on beat 1 and 3
+      if (shantyStep % 2 === 0) {
+        const bassOsc = audioCtx.createOscillator();
+        const bassGain = audioCtx.createGain();
+        bassOsc.type = 'triangle';
+        bassOsc.frequency.setValueAtTime(146.83, now); // D3
+        bassGain.gain.setValueAtTime(0.001, now);
+        bassGain.gain.linearRampToValueAtTime(0.08, now + 0.04);
+        bassGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+        bassOsc.connect(bassGain);
+        bassGain.connect(audioCtx.destination);
+        bassOsc.start(now);
+        bassOsc.stop(now + 0.38);
+      }
     }
 
     function toggleAudio() {
@@ -1912,13 +1879,13 @@
 
       if (isPlayingBGM) {
         eq.classList.add('playing');
-        label.textContent = 'BGM On';
+        label.textContent = 'Shanty On';
         if (shantyTimer) clearInterval(shantyTimer);
-        playNextShantyNote();
-        shantyTimer = setInterval(playNextShantyNote, 420);
+        playSeaShantyNote();
+        shantyTimer = setInterval(playSeaShantyNote, 380);
       } else {
         eq.classList.remove('playing');
-        label.textContent = 'Play BGM';
+        label.textContent = 'Sea Shanty';
         if (shantyTimer) {
           clearInterval(shantyTimer);
           shantyTimer = null;
@@ -1969,7 +1936,6 @@
       const dt = Math.min(clock.getDelta(), 0.05);
       const elapsed = clock.getElapsedTime();
 
-      // 1. Animate Ocean Waves
       for (let i = 0; i < waterPosAttr.count; i++) {
         const orig = waterOrigCoords[i];
         const waveY = getWaveHeightAt(orig.x, orig.z, elapsed);
@@ -1977,7 +1943,6 @@
       }
       waterPosAttr.needsUpdate = true;
 
-      // 2. Manual Keyboard Control or Autopilot Sailing
       const forwardInput = (keysPressed['KeyW'] || keysPressed['ArrowUp'] ? 1 : 0) - (keysPressed['KeyS'] || keysPressed['ArrowDown'] ? 1 : 0);
       const turnInput = (keysPressed['KeyA'] || keysPressed['ArrowLeft'] ? 1 : 0) - (keysPressed['KeyD'] || keysPressed['ArrowRight'] ? 1 : 0);
       const boostMult = (keysPressed['ShiftLeft'] || keysPressed['ShiftRight']) ? 1.65 : 1.0;
@@ -2020,12 +1985,10 @@
         }
       }
 
-      // 3. Ship Buoyancy on Waves (Never Sinks)
       const waveY = getWaveHeightAt(shipGroup.position.x, shipGroup.position.z, elapsed);
       shipGroup.position.y = 0.14 + waveY * 0.65;
       shipModel.rotation.x = Math.sin(elapsed * 2.1) * 0.035;
 
-      // 4. Animate Island Props, Foam Rings, Clouds & Sea Birds
       animatedProps.forEach(prop => {
         if (prop.scalePulse) {
           const s = 1 + Math.sin(elapsed * 2.0 + prop.phase) * 0.035;
@@ -2056,7 +2019,6 @@
         b.rightWing.rotation.z = -flap;
       });
 
-      // 5. Smooth Camera Follow
       if (cameraFollowShip) {
         camLookTarget.lerp(new THREE.Vector3(shipGroup.position.x, 1.15, shipGroup.position.z), Math.min(1, dt * 5.0));
       }
