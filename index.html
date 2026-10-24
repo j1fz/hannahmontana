@@ -1,35 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Captain Reztroid — Interactive Pirate Sea Portfolio</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Three.js and OrbitControls -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  <!-- GSAP for UI & smooth transitions -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Three.js & GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+    :root {
+      --pill-bg: rgba(251, 248, 241, 0.94);
+      --pill-text: #1c1917;
+      --pill-border: rgba(28, 25, 23, 0.1);
+      --pill-dark-bg: #1c1917;
+      --pill-dark-text: #fafaf9;
+    }
+
+    body.night-mode {
+      --pill-bg: rgba(18, 25, 36, 0.92);
+      --pill-text: #f5f5f4;
+      --pill-border: rgba(255, 255, 255, 0.14);
+      --pill-dark-bg: #f59e0b;
+      --pill-dark-text: #0f172a;
+    }
 
     * {
-      user-select: none;
-      -webkit-user-select: none;
+      box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     html, body {
+      margin: 0;
+      padding: 0;
       width: 100%;
-      height: 100dvh;
+      height: 100%;
+      min-height: 100dvh;
       overflow: hidden;
+      position: fixed;
+      inset: 0;
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       touch-action: none;
       letter-spacing: -0.01em;
+      background-color: #d6cbb9;
     }
 
     .font-nautical {
@@ -40,10 +62,9 @@
 
     #webgl-canvas {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100dvh;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
       outline: none;
       z-index: 1;
       display: block;
@@ -53,109 +74,109 @@
       cursor: grabbing;
     }
 
-    .island-pin {
-      position: absolute;
-      transform: translate(-50%, -50%);
-      pointer-events: auto;
-      cursor: pointer;
-      z-index: 20;
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
-      white-space: nowrap;
-      will-change: transform, left, top;
-    }
-    .island-pin:hover {
-      transform: translate(-50%, -58%) scale(1.05);
-    }
-    .island-pin:active {
-      transform: translate(-50%, -50%) scale(0.95);
-    }
-
-    /* Strict High-Contrast Theme Styles */
     .pill-surface {
-      background: rgba(252, 249, 242, 0.96);
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      box-shadow: 0 6px 20px -4px rgba(15, 23, 30, 0.12);
-      color: #1c1917;
-    }
-    @media (min-width: 768px) {
-      .pill-surface {
-        background: rgba(252, 249, 242, 0.92);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-      }
-    }
-    body.night-mode .pill-surface {
-      background: rgba(18, 25, 35, 0.96) !important;
-      border: 1px solid rgba(255, 255, 255, 0.18) !important;
-      box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.75) !important;
-      color: #f5f5f4 !important;
+      background: var(--pill-bg);
+      color: var(--pill-text);
+      border: 1px solid var(--pill-border);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 8px 26px -4px rgba(0, 0, 0, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.06);
+      transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .pill-dark {
-      background: #17191c;
-      color: #fafaf9;
-      box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.28);
-    }
-    body.night-mode .pill-dark {
-      background: #e7e5e4 !important;
-      color: #141619 !important;
+      background: var(--pill-dark-bg);
+      color: var(--pill-dark-text);
+      box-shadow: 0 6px 18px -3px rgba(0, 0, 0, 0.25);
+      transition: all 0.25s ease;
     }
 
-    @keyframes eqBar {
-      0%, 100% { height: 4px; }
-      50% { height: 13px; }
+    /* 3D Screen Space Island Pins */
+    .island-pin {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 15;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      cursor: pointer;
+      white-space: nowrap;
+      will-change: left, top;
+    }
+    .island-pin:hover {
+      transform: translate(-50%, -56%) scale(1.05);
+    }
+    .island-pin:active {
+      transform: translate(-50%, -50%) scale(0.96);
+    }
+
+    /* Equalizer Bars */
+    @keyframes eqPulse {
+      0%, 100% { height: 3px; }
+      50% { height: 11px; }
     }
     .eq-bar {
       width: 2.5px;
-      height: 4px;
-      border-radius: 99px;
+      height: 3px;
       background: currentColor;
+      border-radius: 2px;
       transition: height 0.2s ease;
     }
-    .bgm-playing .eq-bar-1 { animation: eqBar 0.65s ease-in-out infinite; }
-    .bgm-playing .eq-bar-2 { animation: eqBar 0.5s ease-in-out 0.18s infinite; }
-    .bgm-playing .eq-bar-3 { animation: eqBar 0.75s ease-in-out 0.32s infinite; }
+    .playing .eq-bar-1 { animation: eqPulse 0.65s infinite ease-in-out 0s; }
+    .playing .eq-bar-2 { animation: eqPulse 0.55s infinite ease-in-out 0.2s; }
+    .playing .eq-bar-3 { animation: eqPulse 0.75s infinite ease-in-out 0.35s; }
 
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-
-    .custom-scroll::-webkit-scrollbar {
-      width: 5px;
-    }
-    .custom-scroll::-webkit-scrollbar-thumb {
-      background: rgba(120, 113, 108, 0.3);
-      border-radius: 9999px;
-    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="overflow-hidden bg-[#d8c3a5] text-stone-900 antialiased selection:bg-amber-200">
+<body>
 
-  <!-- 3D Ocean Canvas -->
+  <!-- 3D WebGL Canvas -->
   <canvas id="webgl-canvas"></canvas>
 
-  <!-- 2D Overlay Container for 3D Projected Island Pins -->
-  <div id="pins-container" class="fixed inset-0 pointer-events-none z-10 overflow-hidden"></div>
+  <!-- 3D Projected Island Pins -->
+  <div id="pins-container" class="fixed inset-0 pointer-events-none z-10 overflow-hidden">
+    <button id="pin-haven" onclick="sailToIsland('haven', true)" class="island-pin pill-surface px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-bold">
+      <span class="w-2 h-2 rounded-full bg-amber-600 shrink-0"></span>
+      <span>About</span>
+      <span class="opacity-55 font-medium hidden sm:inline">Reztroid</span>
+    </button>
 
-  <!-- Top Navigation Bar (Optimized for Mobile & Desktop) -->
-  <header class="fixed top-0 inset-x-0 z-30 p-2.5 sm:p-5 flex flex-col items-center pointer-events-none gap-2">
-    <div class="w-full max-w-4xl flex items-center justify-between gap-2 pointer-events-auto">
-      <button onclick="sailToIsland('haven', true)" class="pill-surface px-3 sm:px-4 py-2 rounded-full flex items-center gap-2.5 transition hover:scale-[1.02] active:scale-95 group shrink-0">
-        <div class="w-6 h-6 rounded-full bg-stone-900 text-amber-400 flex items-center justify-center transition group-hover:rotate-12 shrink-0">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+    <button id="pin-vault" onclick="sailToIsland('vault', true)" class="island-pin pill-surface px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-bold">
+      <span class="w-2 h-2 rounded-full bg-amber-600 shrink-0"></span>
+      <span>Pricelist</span>
+      <span class="opacity-55 font-medium hidden sm:inline">Katalog</span>
+    </button>
+
+    <button id="pin-log" onclick="sailToIsland('log', true)" class="island-pin pill-surface px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-bold">
+      <span class="w-2 h-2 rounded-full bg-amber-600 shrink-0"></span>
+      <span>Testimoni</span>
+      <span class="opacity-55 font-medium hidden sm:inline">Review</span>
+    </button>
+
+    <button id="pin-signal" onclick="sailToIsland('signal', true)" class="island-pin pill-surface px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-bold">
+      <span class="w-2 h-2 rounded-full bg-amber-600 shrink-0"></span>
+      <span>Order</span>
+      <span class="opacity-55 font-medium hidden sm:inline">Kontak</span>
+    </button>
+  </div>
+
+  <!-- Top Navigation Bar (Responsive Mobile & Desktop) -->
+  <header class="fixed top-0 inset-x-0 z-30 pt-[max(0.6rem,env(safe-area-inset-top))] px-2.5 pb-2 sm:p-5 flex flex-col items-center pointer-events-none gap-1.5 sm:gap-2">
+    <div class="w-full max-w-4xl flex items-center justify-between gap-1.5 pointer-events-auto">
+      <button onclick="sailToIsland('haven', true)" class="pill-surface px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full flex items-center gap-2 transition hover:scale-[1.02] active:scale-95 group shrink-0">
+        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-stone-900 text-amber-400 flex items-center justify-center transition group-hover:rotate-12 shrink-0">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
             <path d="M12 2C7.58 2 4 5.58 4 10c0 2.21.9 4.21 2.35 5.65.3.3.65.65.65 1.05v1.3c0 .55.45 1 1 1h1v1c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-1h1c.55 0 1-.45 1-1v-1.3c0-.4.35-.75.65-1.05C20.1 14.21 21 12.21 21 10c0-4.42-3.58-8-8-8zm-3 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zm6 0a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0z"/>
           </svg>
         </div>
         <span class="font-nautical font-black text-xs sm:text-sm tracking-tight">Captain Reztroid</span>
       </button>
 
-      <div class="flex items-center gap-1.5">
-        <button id="btn-audio-top" onclick="toggleAudio()" class="pill-surface px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-semibold transition hover:scale-105 active:scale-95">
-          <div id="bgm-eq" class="flex items-end gap-0.5 h-3 text-amber-700">
+      <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+        <button id="btn-audio-top" onclick="toggleAudio()" class="pill-surface px-2.5 sm:px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold transition hover:scale-105 active:scale-95">
+          <div id="bgm-eq" class="flex items-end gap-0.5 h-3 text-amber-600">
             <span class="eq-bar eq-bar-1"></span>
             <span class="eq-bar eq-bar-2"></span>
             <span class="eq-bar eq-bar-3"></span>
@@ -173,16 +194,16 @@
       </div>
     </div>
 
-    <nav class="pointer-events-auto pill-surface p-1 rounded-full flex items-center gap-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full">
-      <button onclick="sailToIsland('haven', true)" class="px-3 py-1.5 rounded-full hover:bg-black/5 transition whitespace-nowrap" data-nav="haven">About</button>
-      <button onclick="sailToIsland('vault', true)" class="px-3 py-1.5 rounded-full hover:bg-black/5 transition whitespace-nowrap" data-nav="vault">Pricelist</button>
-      <button onclick="sailToIsland('log', true)" class="px-3 py-1.5 rounded-full hover:bg-black/5 transition whitespace-nowrap" data-nav="log">Testimoni</button>
-      <button onclick="sailToIsland('signal', true)" class="px-3 py-1.5 rounded-full hover:bg-black/5 transition whitespace-nowrap" data-nav="signal">Order & Kontak</button>
+    <nav class="pointer-events-auto pill-surface p-1 rounded-full flex items-center justify-center gap-0.5 sm:gap-1 text-[11px] sm:text-xs font-semibold overflow-x-auto no-scrollbar max-w-full">
+      <button onclick="sailToIsland('haven', true)" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full hover:bg-black/5 transition whitespace-nowrap" data-nav="haven">About</button>
+      <button onclick="sailToIsland('vault', true)" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full hover:bg-black/5 transition whitespace-nowrap" data-nav="vault">Pricelist</button>
+      <button onclick="sailToIsland('log', true)" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full hover:bg-black/5 transition whitespace-nowrap" data-nav="log">Testimoni</button>
+      <button onclick="sailToIsland('signal', true)" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full hover:bg-black/5 transition whitespace-nowrap" data-nav="signal">Order & Kontak</button>
     </nav>
 
-    <!-- Ship Status Hint (Integrated neatly below nav so it never overlaps on mobile) -->
+    <!-- Ship Status Hint -->
     <div id="ship-status" class="pointer-events-none transition-opacity duration-200 px-3 flex justify-center w-full">
-      <div class="pill-surface px-3 py-1 rounded-full flex items-center gap-2 text-[11px] sm:text-xs font-medium opacity-95 max-w-full truncate shadow-sm">
+      <div class="pill-surface px-3 py-0.5 sm:py-1 rounded-full flex items-center gap-1.5 text-[10px] sm:text-xs font-medium opacity-95 max-w-full truncate shadow-sm">
         <span class="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse shrink-0"></span>
         <span id="ship-status-text" class="truncate">Klik pulau atau air laut untuk berlayar</span>
       </div>
@@ -190,8 +211,8 @@
   </header>
 
   <!-- Left Bottom Utility Stack -->
-  <div class="fixed bottom-4 sm:bottom-6 left-3 sm:left-6 z-20 flex flex-col gap-2 pointer-events-auto">
-    <button onclick="fireBroadsideCannons()" title="Tembak Meriam (Spacebar)" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full pill-surface flex items-center justify-center hover:scale-105 active:scale-95 transition text-amber-700 shadow-md">
+  <div class="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] sm:bottom-6 left-3 sm:left-6 z-20 flex flex-col gap-2 pointer-events-auto">
+    <button onclick="fireBroadsideCannons()" title="Tembak Meriam (Spacebar)" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full pill-surface flex items-center justify-center hover:scale-105 active:scale-95 transition text-amber-600 shadow-md">
       <i data-lucide="flame" class="w-4 h-4"></i>
     </button>
     <button id="btn-cam-mode" onclick="toggleCameraFollow()" title="Mode Kamera" class="w-9 h-9 sm:w-auto sm:px-3.5 sm:py-2 rounded-full pill-surface text-xs font-semibold flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition shadow-md">
@@ -201,36 +222,36 @@
   </div>
 
   <!-- Floating Island Preview Card -->
-  <div id="island-preview-card" class="fixed bottom-16 sm:bottom-20 inset-x-0 z-30 flex justify-center px-3 pointer-events-none transition-all duration-200 opacity-0 translate-y-4">
-    <div class="pointer-events-auto pill-surface w-full max-w-md rounded-3xl p-4 sm:p-5 shadow-2xl relative">
-      <button onclick="hidePreviewCard()" class="absolute top-3.5 right-3.5 w-7 h-7 rounded-full bg-stone-200/75 hover:bg-stone-300 text-stone-700 flex items-center justify-center transition active:scale-90" title="Tutup">
+  <div id="island-preview-card" class="fixed bottom-[calc(3.8rem+env(safe-area-inset-bottom))] sm:bottom-20 inset-x-0 z-30 flex justify-center px-3 pointer-events-none transition-all duration-200 opacity-0 translate-y-4">
+    <div class="pointer-events-auto pill-surface w-full max-w-md rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 shadow-2xl relative">
+      <button onclick="hidePreviewCard()" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-stone-500/20 hover:bg-stone-500/30 flex items-center justify-center transition active:scale-90" title="Tutup">
         <i data-lucide="x" class="w-3.5 h-3.5"></i>
       </button>
 
       <div class="flex items-center gap-2.5 pr-7">
-        <div id="preview-icon" class="w-9 h-9 rounded-2xl bg-stone-900 text-amber-400 flex items-center justify-center text-base shrink-0">
+        <div id="preview-icon" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl sm:rounded-2xl bg-stone-900 text-amber-400 flex items-center justify-center text-sm sm:text-base shrink-0">
           🏴‍☠️
         </div>
         <div class="min-w-0">
           <div class="flex items-center gap-1.5">
-            <span id="preview-badge" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-800">Markas Utama</span>
+            <span id="preview-badge" class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600">Markas Utama</span>
           </div>
-          <h3 id="preview-title" class="font-nautical text-xl sm:text-2xl font-black leading-tight truncate mt-0.5 tracking-tight">About Reztroid</h3>
+          <h3 id="preview-title" class="font-nautical text-lg sm:text-2xl font-black leading-tight truncate mt-0.5 tracking-tight">About Reztroid</h3>
         </div>
       </div>
 
-      <p id="preview-desc" class="text-xs sm:text-sm font-medium opacity-85 mt-2.5 leading-relaxed line-clamp-2 sm:line-clamp-3">
+      <p id="preview-desc" class="text-xs sm:text-sm font-medium opacity-85 mt-2 leading-relaxed line-clamp-2 sm:line-clamp-3">
         Selamat datang di pelabuhan utama Captain Reztroid. Lihat profil lengkap, layanan unggulan, dan cara kerja kami.
       </p>
 
-      <div id="preview-highlights" class="flex flex-wrap gap-1.5 mt-3"></div>
+      <div id="preview-highlights" class="flex flex-wrap gap-1 sm:gap-1.5 mt-2.5"></div>
 
-      <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-stone-300/30">
-        <button onclick="openCurrentIslandModal()" class="py-2.5 px-3 rounded-xl bg-stone-200/80 hover:bg-stone-300 text-stone-900 font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95">
+      <div class="grid grid-cols-2 gap-2 mt-3 pt-2.5 border-t border-stone-400/20">
+        <button onclick="openCurrentIslandModal()" class="py-2 sm:py-2.5 px-3 rounded-xl bg-stone-500/15 hover:bg-stone-500/25 font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95">
           <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
           <span>Lihat Detail</span>
         </button>
-        <a id="preview-external-link" href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" class="py-2.5 px-3 rounded-xl pill-dark font-bold text-xs flex items-center justify-center gap-1.5 transition hover:opacity-90 active:scale-95">
+        <a id="preview-external-link" href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" class="py-2 sm:py-2.5 px-3 rounded-xl pill-dark font-bold text-xs flex items-center justify-center gap-1.5 transition hover:opacity-90 active:scale-95">
           <span id="preview-link-label">Buka Link</span>
           <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
         </a>
@@ -239,130 +260,121 @@
   </div>
 
   <!-- Bottom Center Mooring Bar -->
-  <div class="fixed bottom-3 sm:bottom-5 inset-x-0 z-20 flex justify-center items-center pointer-events-none px-12 sm:px-4">
-    <div class="pointer-events-auto pill-surface p-1 pl-3.5 sm:p-1.5 sm:pl-4 rounded-full flex items-center gap-2 sm:gap-3 max-w-full">
-      <span id="active-island-name" class="font-nautical text-xs sm:text-sm font-black tracking-tight truncate max-w-[130px] sm:max-w-none">About · Reztroid</span>
-      <button id="btn-moor" onclick="openCurrentIslandModal()" class="pill-dark text-xs sm:text-sm font-bold px-4 py-2 rounded-full transition hover:opacity-90 active:scale-95 flex items-center gap-1.5 shrink-0">
+  <div class="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] sm:bottom-5 inset-x-0 z-20 flex justify-center items-center pointer-events-none px-14 sm:px-4">
+    <div class="pointer-events-auto pill-surface p-1 pl-3 sm:p-1.5 sm:pl-4 rounded-full flex items-center gap-2 sm:gap-3 max-w-full shadow-md">
+      <span id="active-island-name" class="font-nautical text-xs sm:text-sm font-black tracking-tight truncate max-w-[125px] sm:max-w-none">About · Reztroid</span>
+      <button id="btn-moor" onclick="openCurrentIslandModal()" class="pill-dark text-xs sm:text-sm font-bold px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full transition hover:opacity-90 active:scale-95 flex items-center gap-1.5 shrink-0">
         <span>Buka Pulau</span>
       </button>
     </div>
   </div>
 
-  <!-- Full Content Drawer / Modal -->
-  <div id="content-modal" class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200 flex items-end sm:items-center justify-center p-0 sm:p-6">
-    <div id="modal-container" class="relative w-full max-w-2xl max-h-[88dvh] sm:max-h-[85vh] bg-[#fcf9f2] text-stone-900 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col transform translate-y-6 sm:translate-y-0 sm:scale-95 transition-all duration-200 border border-stone-200/80">
-      
-      <div class="p-4 sm:p-6 border-b border-stone-200/80 flex items-center justify-between bg-[#f7f2e7]/90 backdrop-blur shrink-0">
-        <div class="flex items-center gap-3 min-w-0">
-          <div id="modal-icon-container" class="w-10 h-10 rounded-2xl bg-stone-900 text-amber-400 flex items-center justify-center text-lg shrink-0 font-bold">
-            ⚓
-          </div>
-          <div class="min-w-0">
-            <h2 id="modal-title" class="text-xl sm:text-2xl font-nautical font-black text-stone-900 leading-none truncate tracking-tight">About Reztroid</h2>
-            <p id="modal-subtitle" class="text-xs sm:text-sm font-medium text-stone-600 mt-1 truncate">Markas Utama & Profil Layanan Captain Reztroid</p>
-          </div>
+  <!-- Full Island Detail Modal (Drawer) -->
+  <div id="island-modal" class="fixed inset-0 z-50 pointer-events-none flex items-end sm:items-center justify-center p-0 sm:p-6 opacity-0 transition-opacity duration-300">
+    <div onclick="closeIslandModal()" class="absolute inset-0 bg-black/55 backdrop-blur-xs"></div>
+    <div id="island-modal-panel" class="relative w-full max-w-2xl max-h-[86dvh] bg-[#fbf8f1] text-stone-900 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200/80 overflow-hidden flex flex-col transform translate-y-8 transition-transform duration-300">
+      <div class="px-5 pt-5 pb-4 sm:px-7 border-b border-stone-200/70 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2.5">
+          <span id="modal-tag" class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-800">Kepulauan Reztroid</span>
         </div>
-        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-stone-200/75 hover:bg-stone-300 text-stone-700 flex items-center justify-center transition active:scale-90 shrink-0 ml-2">
+        <button onclick="closeIslandModal()" class="w-8 h-8 rounded-full bg-stone-200/70 hover:bg-stone-300/80 flex items-center justify-center text-stone-700 transition">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
-
-      <div id="modal-body" class="p-4 sm:p-6 overflow-y-auto custom-scroll text-xs sm:text-sm font-medium leading-relaxed text-stone-700 space-y-4"></div>
-
-      <div class="p-3.5 sm:p-4 px-4 sm:px-6 bg-[#f4efe4] border-t border-stone-200/80 flex items-center justify-between gap-2 text-xs sm:text-sm text-stone-600 shrink-0">
-        <button onclick="closeModal()" class="px-4 py-2 rounded-full bg-stone-200/80 text-stone-900 font-bold hover:bg-stone-300 transition">
-          Kembali Berlayar
-        </button>
-        <a id="modal-external-btn" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-full bg-stone-900 text-white font-bold hover:bg-stone-800 transition flex items-center gap-1.5">
-          <span id="modal-external-text">Buka Link Tujuan</span>
-          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-        </a>
-      </div>
+      <div id="modal-body" class="p-5 sm:p-7 overflow-y-auto no-scrollbar space-y-5 text-sm leading-relaxed"></div>
     </div>
   </div>
 
-  <!-- Help & Controls Modal -->
-  <div id="help-modal" class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200 flex items-center justify-center p-4">
-    <div class="bg-[#fcf9f2] border border-stone-200 rounded-3xl p-5 sm:p-6 max-w-md w-full shadow-2xl space-y-4 text-stone-800">
-      <div class="flex items-center justify-between border-b pb-3 border-stone-200">
-        <h3 class="font-nautical text-xl font-black text-stone-900 flex items-center gap-2 tracking-tight">
-          ⚓ Panduan Pelayaran
-        </h3>
-        <button onclick="toggleHelpModal()" class="text-stone-400 hover:text-stone-700">
+  <!-- Help Modal -->
+  <div id="help-modal" class="fixed inset-0 z-50 pointer-events-none flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+    <div onclick="toggleHelpModal()" class="absolute inset-0 bg-black/50 backdrop-blur-xs"></div>
+    <div class="relative w-full max-w-sm bg-[#fbf8f1] text-stone-900 rounded-3xl p-6 shadow-2xl border border-stone-200">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-nautical text-xl font-black tracking-tight">Panduan Pelayaran</h3>
+        <button onclick="toggleHelpModal()" class="w-8 h-8 rounded-full bg-stone-200/70 flex items-center justify-center">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
-      <div class="space-y-3 text-xs sm:text-sm font-medium text-stone-600 leading-relaxed">
-        <div class="flex items-start gap-3">
-          <span class="px-2.5 py-1 bg-stone-200/80 text-stone-900 font-bold rounded-lg shrink-0">Tap Pulau</span>
-          <p>Sentuh pulau 3D atau pin namanya untuk berlayar ke sana dan melihat menu detail.</p>
+      <div class="space-y-2.5 text-xs text-stone-600">
+        <div class="flex items-center justify-between py-2 border-b border-stone-200">
+          <span class="font-semibold text-stone-800">Klik Pulau / Nama</span>
+          <span class="px-2 py-1 bg-stone-200/80 rounded font-mono text-stone-900">Buka Info & Link</span>
         </div>
-        <div class="flex items-start gap-3">
-          <span class="px-2.5 py-1 bg-stone-200/80 text-stone-900 font-bold rounded-lg shrink-0">Tap Air Laut</span>
-          <p>Sentuh air laut di mana saja untuk menyuruh kapal berlayar ke titik tersebut.</p>
+        <div class="flex items-center justify-between py-2 border-b border-stone-200">
+          <span class="font-semibold text-stone-800">Klik Air Laut</span>
+          <span class="px-2 py-1 bg-stone-200/80 rounded font-mono text-stone-900">Berlayar ke Titik</span>
         </div>
-        <div class="flex items-start gap-3">
-          <span class="px-2.5 py-1 bg-stone-200/80 text-stone-900 font-bold rounded-lg shrink-0">Geser & Cubit</span>
-          <p>Geser 1 jari untuk memutar kamera 360°, dan cubit 2 jari untuk zoom in/out.</p>
+        <div class="flex items-center justify-between py-2 border-b border-stone-200">
+          <span class="font-semibold text-stone-800">Kemudi Keyboard</span>
+          <span class="px-2 py-1 bg-stone-200/80 rounded font-mono text-stone-900">W A S D / Panah</span>
+        </div>
+        <div class="flex items-center justify-between py-2 border-b border-stone-200">
+          <span class="font-semibold text-stone-800">Tembak Meriam</span>
+          <span class="px-2 py-1 bg-stone-200/80 rounded font-mono text-stone-900">Spacebar / Ikon Api</span>
+        </div>
+        <div class="flex items-center justify-between py-2">
+          <span class="font-semibold text-stone-800">Putar Kamera 360°</span>
+          <span class="px-2 py-1 bg-stone-200/80 rounded font-mono text-stone-900">Geser Layar / Mouse</span>
         </div>
       </div>
-      <button onclick="toggleHelpModal()" class="w-full py-3 bg-stone-900 text-white font-bold text-xs sm:text-sm rounded-full hover:bg-stone-800 transition">
-        Siap Berlayar, Captain!
-      </button>
     </div>
   </div>
 
   <script>
+    // ============================================================================
+    // KONFIGURASI LINK & KONTEN CAPTAIN REZTROID
+    // ============================================================================
     const REZTROID_CONFIG = {
       customMp3Url: '',
       links: {
         haven: 'https://instagram.com/',
-        vault: 'https://wa.me/6281234567890',
+        vault: 'https://wa.me/6281234567890?text=Halo%20Captain%20Reztroid,%20saya%20ingin%20tanya%20pricelist',
         log: 'https://instagram.com/',
-        signal: 'https://wa.me/6281234567890'
+        signal: 'https://wa.me/6281234567890?text=Halo%20Captain%20Reztroid,%20saya%20ingin%20order'
       }
     };
 
     const PIRATE_ISLANDS = {
       haven: {
         id: 'haven',
-        name: "About · Reztroid",
-        label: "About",
-        sublabel: "Reztroid",
-        badge: "Markas Utama",
-        icon: "🏴‍☠️",
-        subtitle: 'Tentang layanan, keahlian & markas besar Captain Reztroid',
-        shortDesc: 'Markas utama Captain Reztroid. Menyediakan layanan digital berkualitas tinggi, pengerjaan cepat, amanah, dan bergaransi penuh.',
-        highlights: ['⚡ Proses Cepat', '🛡️ Bergaransi', '⚓ Trusted Captain'],
-        linkUrl: REZTROID_CONFIG.links.haven,
-        linkLabel: 'Profil & Portfolio',
-        position: { x: 0, y: 0, z: 0 },
-        dockPosition: { x: -4.4, y: 0.32, z: 4.0 },
-        dockRotationY: Math.PI * 0.25,
-        badgeColor: 'bg-amber-600',
-        content: `
-          <div class="space-y-4">
-            <div class="p-4 bg-[#f3ede0] rounded-2xl border border-stone-200 flex items-start gap-3.5">
-              <span class="text-2xl">🏴‍☠️</span>
-              <div>
-                <h4 class="font-nautical text-xl font-black text-stone-900 tracking-tight">Captain Reztroid — Official Hub</h4>
-                <p class="text-xs sm:text-sm font-medium text-stone-700 mt-1">Selamat datang di kapal induk <strong>The Black Revenge</strong>. Kami melayani berbagai kebutuhan produk digital, jasa kreatif, dan solusi terbaik untuk pelanggan di seluruh samudra.</p>
+        name: 'About · Reztroid',
+        badge: 'Markas Utama',
+        icon: '🏴‍☠️',
+        shortTitle: 'About Reztroid',
+        shortDesc: 'Markas utama Captain Reztroid. Kenali layanan kreatif, kualitas pengerjaan, dan keunggulan armada kami.',
+        highlights: ['⚡ Proses Cepat', '💎 Kualitas Premium', '🛡️ Bergaransi'],
+        linkLabel: 'Profil Instagram',
+        externalUrl: REZTROID_CONFIG.links.haven,
+        html: `
+          <div class="space-y-5">
+            <div>
+              <h2 class="font-nautical text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">Captain Reztroid</h2>
+              <p class="text-stone-500 text-xs mt-1 font-medium">Digital Creative & Trusted Service Armada</p>
+            </div>
+            <p class="text-stone-700 leading-relaxed">
+              Selamat datang di pelabuhan resmi <strong>Captain Reztroid</strong>. Kami menyediakan layanan digital berkualitas tinggi dengan pengerjaan cepat, transparan, dan bergaransi penuh bagi setiap klien.
+            </p>
+            <div class="grid grid-cols-3 gap-2.5 pt-1">
+              <div class="p-3.5 rounded-2xl bg-stone-100 border border-stone-200/70 text-center">
+                <div class="font-nautical text-xl sm:text-2xl font-black text-stone-900">500+</div>
+                <div class="text-[10px] uppercase tracking-wider text-stone-500 mt-0.5 font-semibold">Order Selesai</div>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-stone-100 border border-stone-200/70 text-center">
+                <div class="font-nautical text-xl sm:text-2xl font-black text-amber-700">4.9★</div>
+                <div class="text-[10px] uppercase tracking-wider text-stone-500 mt-0.5 font-semibold">Rating Klien</div>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-stone-100 border border-stone-200/70 text-center">
+                <div class="font-nautical text-xl sm:text-2xl font-black text-stone-900">24/7</div>
+                <div class="text-[10px] uppercase tracking-wider text-stone-500 mt-0.5 font-semibold">Fast Respon</div>
               </div>
             </div>
-            <p class="text-xs sm:text-sm font-medium">Setiap pulau di kepulauan ini menyimpan informasi penting. Kamu bisa berlayar ke pulau <strong>Pricelist</strong> untuk mengecek daftar harga paket, pulau <strong>Testimoni</strong> untuk melihat ratusan ulasan pembeli, atau pulau <strong>Order & Kontak</strong> untuk langsung bertransaksi.</p>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
-              <div class="p-3.5 bg-white rounded-2xl border border-stone-200/90 shadow-sm">
-                <span class="text-xs font-bold text-stone-900 block">⚡ Fast Response</span>
-                <span class="text-xs font-medium text-stone-600 mt-0.5 block">Pesanan diproses langsung tanpa menunggu lama.</span>
-              </div>
-              <div class="p-3.5 bg-white rounded-2xl border border-stone-200/90 shadow-sm">
-                <span class="text-xs font-bold text-stone-900 block">💎 Kualitas Terbaik</span>
-                <span class="text-xs font-medium text-stone-600 mt-0.5 block">Layanan resmi, legal, dan bergaransi penuh.</span>
-              </div>
-              <div class="p-3.5 bg-white rounded-2xl border border-stone-200/90 shadow-sm">
-                <span class="text-xs font-bold text-stone-900 block">⭐ Ratusan Testimoni</span>
-                <span class="text-xs font-medium text-stone-600 mt-0.5 block">Dipercaya oleh banyak kru dan pelanggan setia.</span>
-              </div>
+            <div class="pt-2 flex flex-wrap gap-2.5">
+              <button onclick="closeIslandModal(); sailToIsland('vault', true);" class="px-4 py-2.5 rounded-full bg-stone-900 text-white text-xs font-bold hover:opacity-90 transition">
+                Lihat Pricelist →
+              </button>
+              <a href="${REZTROID_CONFIG.links.haven}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-full bg-stone-200 text-stone-800 text-xs font-bold hover:bg-stone-300 transition">
+                Kunjungi Instagram ↗
+              </a>
             </div>
           </div>
         `
@@ -370,85 +382,54 @@
       vault: {
         id: 'vault',
         name: 'Pricelist · Katalog',
-        label: 'Pricelist',
-        sublabel: 'Harga',
         badge: 'Katalog Harga',
-        icon: '🪙',
-        subtitle: "Daftar paket layanan & harga resmi Captain Reztroid",
-        shortDesc: 'Cek daftar harga paket lengkap dari Basic hingga Sultan. Harga transparan, ramah di kantong, dan banyak bonus spesial.',
-        highlights: ['🪙 Mulai Rp 15rb', '📦 Paket Lengkap', '🔥 Promo Tersedia'],
-        linkUrl: REZTROID_CONFIG.links.vault,
-        linkLabel: 'Order via WhatsApp',
-        position: { x: -17, y: 0, z: -6 },
-        dockPosition: { x: -12.2, y: 0.32, z: -2.4 },
-        dockRotationY: -Math.PI * 0.2,
-        badgeColor: 'bg-amber-600',
-        content: `
+        icon: '💰',
+        shortTitle: 'Pricelist & Paket',
+        shortDesc: 'Daftar harga lengkap layanan Captain Reztroid. Pilih paket sesuai kebutuhanmu dengan harga transparan.',
+        highlights: ['📦 Paket Basic', '🔥 Paket Pro Fleet', '👑 Custom Order'],
+        linkLabel: 'Tanya / Order WA',
+        externalUrl: REZTROID_CONFIG.links.vault,
+        html: `
           <div class="space-y-4">
-            <p class="text-xs sm:text-sm font-medium text-stone-600">Pilih paket harta karun yang sesuai dengan kebutuhanmu. Klik tombol di bawah untuk langsung memesan:</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="border border-stone-200/90 rounded-2xl p-4 bg-white hover:border-amber-600/60 transition flex flex-col justify-between shadow-sm">
+            <div>
+              <h2 class="font-nautical text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">Pricelist Layanan</h2>
+              <p class="text-stone-500 text-xs mt-1 font-medium">Pilih paket layanan terbaik dari Captain Reztroid</p>
+            </div>
+            <div class="space-y-3">
+              <div class="p-4 rounded-2xl bg-white border border-stone-200 flex items-center justify-between gap-3">
                 <div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 bg-stone-100 rounded-full text-stone-700">Starter Crew</span>
-                    <span class="font-nautical text-xl font-bold text-amber-800">Rp 25.000</span>
-                  </div>
-                  <h5 class="font-nautical text-lg font-bold text-stone-900 mt-2">Paket Basic Corsair</h5>
-                  <ul class="text-xs font-medium text-stone-600 mt-2.5 space-y-1.5">
-                    <li>✓ Akses penuh fitur dasar</li>
-                    <li>✓ Pengerjaan instan 5-15 menit</li>
-                    <li>✓ Garansi penuh selama masa aktif</li>
-                  </ul>
+                  <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-100 text-stone-600">Starter</span>
+                  <h4 class="font-bold text-stone-900 text-base mt-1">Paket Basic Corsair</h4>
+                  <p class="text-xs text-stone-500 mt-0.5">Pengerjaan reguler, 2x revisi minor, file siap pakai.</p>
                 </div>
-                <a href="${REZTROID_CONFIG.links.vault}" target="_blank" class="mt-4 w-full py-2.5 rounded-xl bg-stone-900 text-white text-center text-xs font-bold hover:bg-stone-800 transition block shadow-sm">Pilih Paket Ini</a>
+                <div class="text-right shrink-0">
+                  <div class="font-nautical text-xl font-black text-amber-700">Rp 50K</div>
+                  <a href="${REZTROID_CONFIG.links.vault}" target="_blank" class="inline-block mt-1 text-[11px] font-bold text-stone-900 underline">Pesan →</a>
+                </div>
               </div>
 
-              <div class="border-2 border-amber-500/80 rounded-2xl p-4 bg-[#fffdf7] transition flex flex-col justify-between relative shadow-sm">
+              <div class="p-4 rounded-2xl bg-amber-500/10 border-2 border-amber-600/40 flex items-center justify-between gap-3">
                 <div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 bg-amber-500/20 rounded-full text-amber-900">Best Seller 🔥</span>
-                    <span class="font-nautical text-xl font-bold text-amber-800">Rp 50.000</span>
-                  </div>
-                  <h5 class="font-nautical text-lg font-bold text-stone-900 mt-2">Paket Captain Pro</h5>
-                  <ul class="text-xs font-medium text-stone-600 mt-2.5 space-y-1.5">
-                    <li>✓ Semua fitur Basic + Prioritas</li>
-                    <li>✓ Bonus eksklusif & full support</li>
-                    <li>✓ Garansi replace 100% aman</li>
-                  </ul>
+                  <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-600 text-white">Best Seller</span>
+                  <h4 class="font-bold text-stone-900 text-base mt-1">Paket Captain Fleet</h4>
+                  <p class="text-xs text-stone-600 mt-0.5">Prioritas ekspres, full garansi & revisi, bonus eksklusif.</p>
                 </div>
-                <a href="${REZTROID_CONFIG.links.vault}" target="_blank" class="mt-4 w-full py-2.5 rounded-xl bg-amber-600 text-white text-center text-xs font-bold hover:bg-amber-700 transition block shadow-sm">Pilih Paket Pro</a>
+                <div class="text-right shrink-0">
+                  <div class="font-nautical text-xl font-black text-amber-800">Rp 150K</div>
+                  <a href="${REZTROID_CONFIG.links.vault}" target="_blank" class="inline-block mt-1 text-[11px] font-bold text-amber-900 underline">Pesan →</a>
+                </div>
               </div>
 
-              <div class="border border-stone-200/90 rounded-2xl p-4 bg-white hover:border-amber-600/60 transition flex flex-col justify-between shadow-sm">
+              <div class="p-4 rounded-2xl bg-white border border-stone-200 flex items-center justify-between gap-3">
                 <div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 bg-stone-100 rounded-full text-stone-700">Royal Fleet</span>
-                    <span class="font-nautical text-xl font-bold text-amber-800">Rp 120.000</span>
-                  </div>
-                  <h5 class="font-nautical text-lg font-bold text-stone-900 mt-2">Paket Admiral VIP</h5>
-                  <ul class="text-xs font-medium text-stone-600 mt-2.5 space-y-1.5">
-                    <li>✓ Layanan kustom penuh sesuai request</li>
-                    <li>✓ Konsultasi langsung dengan Reztroid</li>
-                    <li>✓ Prioritas antrean nomor satu</li>
-                  </ul>
+                  <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-900 text-amber-400">VIP Custom</span>
+                  <h4 class="font-bold text-stone-900 text-base mt-1">Paket Admiral Full Custom</h4>
+                  <p class="text-xs text-stone-500 mt-0.5">Spesifikasi khusus sesuai request dari awal hingga tuntas.</p>
                 </div>
-                <a href="${REZTROID_CONFIG.links.vault}" target="_blank" class="mt-4 w-full py-2.5 rounded-xl bg-stone-900 text-white text-center text-xs font-bold hover:bg-stone-800 transition block shadow-sm">Pilih Paket VIP</a>
-              </div>
-
-              <div class="border border-stone-200/90 rounded-2xl p-4 bg-white hover:border-amber-600/60 transition flex flex-col justify-between shadow-sm">
-                <div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 bg-stone-100 rounded-full text-stone-700">Custom Bounty</span>
-                    <span class="font-nautical text-xl font-bold text-amber-800">Nego</span>
-                  </div>
-                  <h5 class="font-nautical text-lg font-bold text-stone-900 mt-2">Request Khusus</h5>
-                  <ul class="text-xs font-medium text-stone-600 mt-2.5 space-y-1.5">
-                    <li>✓ Butuh project atau order jumlah banyak?</li>
-                    <li>✓ Diskon spesial untuk reseller / langganan</li>
-                    <li>✓ Hubungi langsung Captain Reztroid</li>
-                  </ul>
+                <div class="text-right shrink-0">
+                  <div class="font-nautical text-xl font-black text-stone-900">Rp 300K+</div>
+                  <a href="${REZTROID_CONFIG.links.vault}" target="_blank" class="inline-block mt-1 text-[11px] font-bold text-stone-900 underline">Pesan →</a>
                 </div>
-                <a href="${REZTROID_CONFIG.links.vault}" target="_blank" class="mt-4 w-full py-2.5 rounded-xl bg-stone-200 text-stone-900 text-center text-xs font-bold hover:bg-stone-300 transition block shadow-sm">Tanya Harga</a>
               </div>
             </div>
           </div>
@@ -456,67 +437,41 @@
       },
       log: {
         id: 'log',
-        name: "Testimoni · Review",
-        label: "Testimoni",
-        sublabel: "Bukti",
-        badge: "100% Trusted",
-        icon: "⭐",
-        subtitle: "Ulasan asli pelanggan & bukti transaksi sukses Captain Reztroid",
-        shortDesc: 'Kumpulan review jujur dan bukti transaksi dari para pelanggan yang sudah berlayar bersama Captain Reztroid. Rating 4.9/5.0!',
-        highlights: ['⭐ Rating 4.9/5', '✅ 500+ Order Sukses', '💬 Real Buyer'],
-        linkUrl: REZTROID_CONFIG.links.log,
+        name: 'Testimoni · Review',
+        badge: 'Bukti & Review',
+        icon: '⭐',
+        shortTitle: 'Testimoni Pelanggan',
+        shortDesc: 'Kumpulan ulasan asli dan bukti kepuasan pelanggan yang telah berlayar bersama Captain Reztroid.',
+        highlights: ['⭐ 100% Trusted', '💬 Review Asli', '📸 Bukti Transaksi'],
         linkLabel: 'Lihat Bukti Lengkap',
-        position: { x: 17, y: 0, z: -5 },
-        dockPosition: { x: 12.2, y: 0.32, z: -1.8 },
-        dockRotationY: Math.PI * 0.65,
-        badgeColor: 'bg-amber-600',
-        content: `
-          <div class="space-y-3.5">
-            <div class="p-4 bg-[#f3ede0] rounded-2xl border border-stone-200 flex items-center justify-between shadow-sm">
-              <div>
-                <span class="text-xs sm:text-sm font-bold text-stone-900 block">Rating Kepuasan Pelanggan</span>
-                <p class="text-xs font-medium text-stone-600">Berdasarkan ratusan transaksi sukses</p>
-              </div>
-              <div class="text-right">
-                <span class="font-nautical text-2xl font-bold text-amber-700">★★★★★ 4.9</span>
-              </div>
+        externalUrl: REZTROID_CONFIG.links.log,
+        html: `
+          <div class="space-y-4">
+            <div>
+              <h2 class="font-nautical text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">Testimoni Pelanggan</h2>
+              <p class="text-stone-500 text-xs mt-1 font-medium">Apa kata mereka tentang layanan Captain Reztroid</p>
             </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="p-4 bg-white rounded-2xl border border-stone-200/90 space-y-2 shadow-sm">
-                <div class="flex items-center justify-between text-xs sm:text-sm">
-                  <span class="font-bold text-stone-900">Raka Pratama</span>
-                  <span class="text-amber-500 font-bold">★★★★★</span>
+            <div class="space-y-3">
+              <div class="p-4 rounded-2xl bg-white border border-stone-200">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-stone-900 text-xs">Raka Pratama</span>
+                  <span class="text-amber-500 text-xs">★★★★★</span>
                 </div>
-                <p class="text-xs sm:text-sm font-medium text-stone-600">"Mantap banget Captain Reztroid! Baru transfer langsung diproses ga pake lama, adminnya ramah pol. Recommended!"</p>
-                <span class="text-[10px] font-bold text-stone-400 block uppercase tracking-wider">Paket Captain Pro · Verified Buyer</span>
+                <p class="text-xs text-stone-600 mt-1.5 leading-relaxed">"Gila sih pengerjaan cepet banget, admin ramah dan hasilnya jauh di atas ekspektasi. Recommended banget sama Captain Reztroid!"</p>
               </div>
-
-              <div class="p-4 bg-white rounded-2xl border border-stone-200/90 space-y-2 shadow-sm">
-                <div class="flex items-center justify-between text-xs sm:text-sm">
-                  <span class="font-bold text-stone-900">Nabila S.</span>
-                  <span class="text-amber-500 font-bold">★★★★★</span>
+              <div class="p-4 rounded-2xl bg-white border border-stone-200">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-stone-900 text-xs">Nadia K.</span>
+                  <span class="text-amber-500 text-xs">★★★★★</span>
                 </div>
-                <p class="text-xs sm:text-sm font-medium text-stone-600">"Udah langganan 3 kali di Reztroid ga pernah kecewa. Harganya paling worth it dibanding tempat lain, garansinya juga beneran."</p>
-                <span class="text-[10px] font-bold text-stone-400 block uppercase tracking-wider">Paket Basic Corsair · Verified Buyer</span>
+                <p class="text-xs text-stone-600 mt-1.5 leading-relaxed">"Udah langganan 3 kali di sini nggak pernah kecewa. Harga terjangkau tapi kualitasnya beneran kelas kapten."</p>
               </div>
-
-              <div class="p-4 bg-white rounded-2xl border border-stone-200/90 space-y-2 shadow-sm">
-                <div class="flex items-center justify-between text-xs sm:text-sm">
-                  <span class="font-bold text-stone-900">Dimas Anggara</span>
-                  <span class="text-amber-500 font-bold">★★★★★</span>
+              <div class="p-4 rounded-2xl bg-white border border-stone-200">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-stone-900 text-xs">Dimas Saputra</span>
+                  <span class="text-amber-500 text-xs">★★★★★</span>
                 </div>
-                <p class="text-xs sm:text-sm font-medium text-stone-600">"Websitenya keren banget bisa jalanin kapal bajak laut sambil liat pricelist! Pelayanan juga bintang lima."</p>
-                <span class="text-[10px] font-bold text-stone-400 block uppercase tracking-wider">Paket Admiral VIP · Verified Buyer</span>
-              </div>
-
-              <div class="p-4 bg-white rounded-2xl border border-stone-200/90 space-y-2 shadow-sm">
-                <div class="flex items-center justify-between text-xs sm:text-sm">
-                  <span class="font-bold text-stone-900">Kevin Wijaya</span>
-                  <span class="text-amber-500 font-bold">★★★★★</span>
-                </div>
-                <p class="text-xs sm:text-sm font-medium text-stone-600">"Fast respon jam 11 malem masih dilayanin dengan sabar. Sukses terus Captain Reztroid!"</p>
-                <span class="text-[10px] font-bold text-stone-400 block uppercase tracking-wider">Custom Bounty · Verified Buyer</span>
+                <p class="text-xs text-stone-600 mt-1.5 leading-relaxed">"Fast respon meskipun chat malam-malam. Revisi langsung dikerjain saat itu juga. Mantap Reztroid!"</p>
               </div>
             </div>
           </div>
@@ -524,738 +479,1289 @@
       },
       signal: {
         id: 'signal',
-        name: "Order · Kontak",
-        label: "Order",
-        sublabel: "Kontak",
-        badge: "Fast Response",
-        icon: "🧭",
-        subtitle: 'Hubungi Captain Reztroid untuk pemesanan & kerja sama',
-        shortDesc: 'Siap memesan atau ingin tanya-tanya dulu? Klik tombol di bawah untuk langsung terhubung ke WhatsApp atau sosial media Captain Reztroid.',
-        highlights: ['💬 WhatsApp Aktif', '📸 Instagram', '⚡ Respon Cepat'],
-        linkUrl: REZTROID_CONFIG.links.signal,
+        name: 'Order · Kontak',
+        badge: 'Jalur Cepat',
+        icon: '🧭',
+        shortTitle: 'Order & Kontak',
+        shortDesc: 'Siap memesan atau ingin konsultasi gratis dulu? Hubungi Captain Reztroid langsung lewat WhatsApp atau sosial media.',
+        highlights: ['📱 WhatsApp Aktif', '📸 DM Instagram', '⚡ Respon Instan'],
         linkLabel: 'Chat WhatsApp',
-        position: { x: 4, y: 0, z: 14 },
-        dockPosition: { x: 1.5, y: 0.32, z: 10.2 },
-        dockRotationY: -Math.PI * 0.35,
-        badgeColor: 'bg-amber-600',
-        content: `
+        externalUrl: REZTROID_CONFIG.links.signal,
+        html: `
           <div class="space-y-4">
-            <p class="text-xs sm:text-sm font-medium text-stone-600">Pilih jalur komunikasi di bawah untuk langsung terhubung dengan <strong>Captain Reztroid</strong>:</p>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <a href="${REZTROID_CONFIG.links.signal}" target="_blank" rel="noopener noreferrer" class="p-4 rounded-2xl bg-emerald-700 text-white hover:bg-emerald-800 transition flex items-center justify-between shadow-sm">
+            <div>
+              <h2 class="font-nautical text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">Hubungi Captain Reztroid</h2>
+              <p class="text-stone-500 text-xs mt-1 font-medium">Klik salah satu jalur komunikasi resmi di bawah ini</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <a href="${REZTROID_CONFIG.links.signal}" target="_blank" rel="noopener noreferrer" class="p-4 rounded-2xl bg-emerald-600 text-white flex items-center justify-between hover:opacity-95 transition">
                 <div>
-                  <span class="text-xs sm:text-sm font-bold block">WhatsApp Official</span>
-                  <span class="text-xs opacity-90">Klik untuk langsung chat & order</span>
+                  <div class="text-[10px] uppercase tracking-wider opacity-80 font-bold">Jalur Utama</div>
+                  <div class="font-bold text-base mt-0.5">WhatsApp Order</div>
                 </div>
                 <i data-lucide="message-circle" class="w-5 h-5"></i>
               </a>
-              <a href="${REZTROID_CONFIG.links.haven}" target="_blank" rel="noopener noreferrer" class="p-4 rounded-2xl bg-stone-900 text-white hover:bg-stone-800 transition flex items-center justify-between shadow-sm">
+              <a href="${REZTROID_CONFIG.links.haven}" target="_blank" rel="noopener noreferrer" class="p-4 rounded-2xl bg-stone-900 text-white flex items-center justify-between hover:opacity-95 transition">
                 <div>
-                  <span class="text-xs sm:text-sm font-bold block">Instagram / Sosial Media</span>
-                  <span class="text-xs opacity-90">@reztroid · Update & katalog</span>
+                  <div class="text-[10px] uppercase tracking-wider opacity-80 font-bold">Katalog & Update</div>
+                  <div class="font-bold text-base mt-0.5">Instagram Resmi</div>
                 </div>
                 <i data-lucide="instagram" class="w-5 h-5"></i>
               </a>
-            </div>
-
-            <div class="space-y-3 bg-white p-4 rounded-2xl border border-stone-200/90 shadow-sm">
-              <h5 class="font-nautical text-lg font-black text-stone-900 tracking-tight">Kirim Pesan Cepat</h5>
-              <div>
-                <label class="block text-xs font-bold text-stone-700 mb-1">Nama Kamu</label>
-                <input id="contact-name" type="text" placeholder="Contoh: Budi" class="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-[#fcf9f2] border border-stone-200 rounded-xl text-stone-900 font-medium focus:outline-none focus:border-stone-500">
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-stone-700 mb-1">Paket / Pesan</label>
-                <textarea id="contact-msg" rows="2" placeholder="Halo Captain Reztroid, saya mau order paket..." class="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-[#fcf9f2] border border-stone-200 rounded-xl text-stone-900 font-medium focus:outline-none focus:border-stone-500"></textarea>
-              </div>
-              <button onclick="handleFormSubmit(this)" class="w-full py-3 bg-stone-900 text-white font-bold text-xs sm:text-sm rounded-xl hover:bg-stone-800 transition active:scale-95 flex items-center justify-center gap-2 shadow-sm">
-                <span>Kirim Pesan ke Captain Reztroid</span>
-              </button>
             </div>
           </div>
         `
       }
     };
 
-    let activeIslandId = 'haven';
-    let isNightMode = false;
-    let isAudioPlaying = false;
-    let audioCtx = null;
-    let ambientGain = null;
-    let shantyTimeout = null;
-    let hasAutoStartedBGM = false;
-    let activeSynthOscs = new Set();
-    let customAudioEl = null;
-
+    // ============================================================================
+    // THREE.JS SCENE SETUP (RETINA HD & FULL MOBILE FIT)
+    // ============================================================================
     const canvas = document.getElementById('webgl-canvas');
     const scene = new THREE.Scene();
 
-    const isMobileScreen = window.innerWidth < 768;
+    function getViewportDimensions() {
+      const w = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+      const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      return { width: w, height: h, isMobile: w < 768 };
+    }
+
+    const vp = getViewportDimensions();
+    const isMobileScreen = vp.isMobile;
     const camera = new THREE.PerspectiveCamera(
-      isMobileScreen ? 54 : 42,
-      window.innerWidth / window.innerHeight,
+      isMobileScreen ? 58 : 42,
+      vp.width / vp.height,
       0.1,
       1000
     );
     if (isMobileScreen) {
-      camera.position.set(-4.4, 12.5, 25.0);
+      camera.position.set(-4.4, 15.2, 29.0);
     } else {
       camera.position.set(-4.4, 8.2, 18.5);
     }
 
     const renderer = new THREE.WebGLRenderer({
       canvas: canvas,
-      antialias: !isMobileScreen,
+      antialias: true,
       powerPreference: 'high-performance'
     });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobileScreen ? 1.5 : 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 2, 2.5));
+    renderer.setSize(vp.width, vp.height, false);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.08;
-    renderer.shadowMap.enabled = !isMobileScreen;
+    renderer.toneMappingExposure = 1.1;
+    renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.055;
-    controls.rotateSpeed = 0.75;
-    controls.zoomSpeed = 0.9;
-    controls.panSpeed = 0.8;
-    controls.maxPolarAngle = Math.PI / 2 - 0.05;
-    controls.minPolarAngle = 0.15;
-    controls.minDistance = 5;
-    controls.maxDistance = 75;
-    controls.target.set(-4.4, 0.8, 4.0);
-
-    const PALETTES = {
-      sunset: {
-        bg: 0xd8c3a5,
-        fog: 0xeddcc8,
-        seaColor: 0x1d6675,
-        seaEmissive: 0x092b33,
-        hemiSky: 0xfff3e6,
-        hemiGround: 0x24434f,
-        dirColor: 0xfff3dc,
-        dirIntensity: 1.45
+    const THEMES = {
+      day: {
+        skyTop: new THREE.Color('#d6b898'),
+        skyHorizon: new THREE.Color('#ede2d3'),
+        fog: new THREE.Color('#e4d7c5'),
+        waterColor: new THREE.Color('#257586'),
+        waterDeep: new THREE.Color('#184d59'),
+        ambientColor: new THREE.Color('#fff5e6'),
+        ambientIntensity: 0.78,
+        sunColor: new THREE.Color('#ffe0b2'),
+        sunIntensity: 1.32
       },
       night: {
-        bg: 0x0b1118,
-        fog: 0x111c28,
-        seaColor: 0x0b3240,
-        seaEmissive: 0x03131c,
-        hemiSky: 0x93b4d4,
-        hemiGround: 0x061117,
-        dirColor: 0xaaccee,
-        dirIntensity: 0.75
+        skyTop: new THREE.Color('#09111e'),
+        skyHorizon: new THREE.Color('#132238'),
+        fog: new THREE.Color('#101d30'),
+        waterColor: new THREE.Color('#0c293a'),
+        waterDeep: new THREE.Color('#071824'),
+        ambientColor: new THREE.Color('#4a6fa5'),
+        ambientIntensity: 0.62,
+        sunColor: new THREE.Color('#7ca5d8'),
+        sunIntensity: 0.8
       }
     };
 
-    const initialPal = PALETTES.sunset;
-    scene.background = new THREE.Color(initialPal.bg);
-    scene.fog = new THREE.FogExp2(initialPal.fog, 0.018);
+    let isNightMode = false;
+    scene.background = THEMES.day.skyHorizon.clone();
+    scene.fog = new THREE.FogExp2(THEMES.day.fog.getHex(), 0.0105);
 
-    const hemiLight = new THREE.HemisphereLight(initialPal.hemiSky, initialPal.hemiGround, 1.0);
+    const hemiLight = new THREE.HemisphereLight(0xfff8ee, 0x3b6e75, 0.55);
     scene.add(hemiLight);
 
-    const dirLight = new THREE.DirectionalLight(initialPal.dirColor, initialPal.dirIntensity);
-    dirLight.position.set(25, 38, 20);
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 1024;
-    dirLight.shadow.mapSize.height = 1024;
-    dirLight.shadow.camera.near = 0.5;
-    dirLight.shadow.camera.far = 120;
-    const dBox = 28;
-    dirLight.shadow.camera.left = -dBox;
-    dirLight.shadow.camera.right = dBox;
-    dirLight.shadow.camera.top = dBox;
-    dirLight.shadow.camera.bottom = -dBox;
-    dirLight.shadow.bias = -0.0005;
-    scene.add(dirLight);
+    const ambientLight = new THREE.AmbientLight(THEMES.day.ambientColor, THEMES.day.ambientIntensity);
+    scene.add(ambientLight);
 
+    const sunLight = new THREE.DirectionalLight(THEMES.day.sunColor, THEMES.day.sunIntensity);
+    sunLight.position.set(24, 38, 22);
+    sunLight.castShadow = true;
+    const shadowRes = isMobileScreen ? 1024 : 2048;
+    sunLight.shadow.mapSize.width = shadowRes;
+    sunLight.shadow.mapSize.height = shadowRes;
+    sunLight.shadow.camera.near = 5;
+    sunLight.shadow.camera.far = 95;
+    const d = 34;
+    sunLight.shadow.camera.left = -d;
+    sunLight.shadow.camera.right = d;
+    sunLight.shadow.camera.top = d;
+    sunLight.shadow.camera.bottom = -d;
+    sunLight.shadow.bias = -0.0005;
+    scene.add(sunLight);
+
+    // ============================================================================
+    // SHARED HD MATERIALS & CRISP JOLLY ROGER FLAG TEXTURE
+    // ============================================================================
     const materials = {
-      hullWood: new THREE.MeshLambertMaterial({ color: 0x4a2e1b }),
-      darkWood: new THREE.MeshLambertMaterial({ color: 0x2b190f }),
-      lightWood: new THREE.MeshLambertMaterial({ color: 0x8c6239 }),
-      gold: new THREE.MeshStandardMaterial({ color: 0xf5b041, metalness: 0.6, roughness: 0.3 }),
-      metalIron: new THREE.MeshStandardMaterial({ color: 0x3e4248, metalness: 0.7, roughness: 0.4 }),
-      sailPlain: new THREE.MeshLambertMaterial({ color: 0xf9f6ee, side: THREE.DoubleSide }),
-      sandBeach: new THREE.MeshLambertMaterial({ color: 0xe3cca3 }),
-      turfGrass: new THREE.MeshLambertMaterial({ color: 0x4f7c32 }),
-      islandRock: new THREE.MeshLambertMaterial({ color: 0x6e665d }),
-      foliageGreen: new THREE.MeshLambertMaterial({ color: 0x2e5c1e }),
-      shallowWater: new THREE.MeshLambertMaterial({ color: 0x4db5be, transparent: true, opacity: 0.65 }),
-      shoreFoam: new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 }),
-      wakeFoam: new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 }),
-      lanternGlow: new THREE.MeshBasicMaterial({ color: 0xffaa33 }),
-      ember: new THREE.MeshBasicMaterial({ color: 0xff4411 }),
-      villagerShirt: new THREE.MeshLambertMaterial({ color: 0xb93838 }),
-      villagerPants: new THREE.MeshLambertMaterial({ color: 0x2c3e50 }),
-      villagerSkin: new THREE.MeshLambertMaterial({ color: 0xf2d3b1 })
+      sand: new THREE.MeshStandardMaterial({ color: 0xe8d1a7, roughness: 0.88, flatShading: true }),
+      sandWet: new THREE.MeshStandardMaterial({ color: 0xcab084, roughness: 0.65, flatShading: true }),
+      grass: new THREE.MeshStandardMaterial({ color: 0x72964c, roughness: 0.82, flatShading: true }),
+      grassDark: new THREE.MeshStandardMaterial({ color: 0x577836, roughness: 0.85, flatShading: true }),
+      rock: new THREE.MeshStandardMaterial({ color: 0x78716a, roughness: 0.85, flatShading: true }),
+      rockDark: new THREE.MeshStandardMaterial({ color: 0x57534e, roughness: 0.9, flatShading: true }),
+      woodDark: new THREE.MeshStandardMaterial({ color: 0x452715, roughness: 0.78, flatShading: true }),
+      woodMid: new THREE.MeshStandardMaterial({ color: 0x633b22, roughness: 0.75, flatShading: true }),
+      woodLight: new THREE.MeshStandardMaterial({ color: 0x855534, roughness: 0.72, flatShading: true }),
+      gold: new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.45, roughness: 0.3, flatShading: true }),
+      iron: new THREE.MeshStandardMaterial({ color: 0x292524, metalness: 0.6, roughness: 0.45, flatShading: true }),
+      hullTrim: new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.5, flatShading: true }),
+      sailWhite: new THREE.MeshStandardMaterial({ color: 0xf7f4eb, roughness: 0.85, side: THREE.DoubleSide }),
+      skin: new THREE.MeshStandardMaterial({ color: 0xf1c27d, roughness: 0.6 }),
+      pirateRed: new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.7 }),
+      pirateBlue: new THREE.MeshStandardMaterial({ color: 0x1d4ed8, roughness: 0.7 }),
+      pirateBlack: new THREE.MeshStandardMaterial({ color: 0x1c1917, roughness: 0.75 }),
+      houseWall: new THREE.MeshStandardMaterial({ color: 0xf5ecd9, roughness: 0.85 }),
+      houseRoof: new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.75, flatShading: true }),
+      windowGlow: new THREE.MeshBasicMaterial({ color: 0xffd580 }),
+      lanternGlow: new THREE.MeshBasicMaterial({ color: 0xffae34 }),
+      cloud: new THREE.MeshStandardMaterial({ color: 0xfaf6f0, roughness: 0.95, flatShading: true }),
+      lagoon: new THREE.MeshBasicMaterial({ color: 0x4cc3c9, transparent: true, opacity: 0.42 }),
+      foamRing: new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.38, side: THREE.DoubleSide }),
+      rope: new THREE.LineBasicMaterial({ color: 0x3b2313, transparent: true, opacity: 0.65 })
     };
 
-    // Clean, perfectly proportioned Jolly Roger Flag Texture (Aspect 2:1)
-    const flagCanvas = document.createElement('canvas');
-    flagCanvas.width = 512;
-    flagCanvas.height = 256;
-    const fCtx = flagCanvas.getContext('2d');
-    
-    fCtx.fillStyle = '#17191c';
-    fCtx.fillRect(0, 0, 512, 256);
+    function createJollyRogerTexture() {
+      const c = document.createElement('canvas');
+      c.width = 1024;
+      c.height = 768;
+      const ctx = c.getContext('2d');
 
-    // Crossed Bones
-    fCtx.fillStyle = '#f5f5f4';
-    fCtx.save();
-    fCtx.translate(256, 128);
-    fCtx.rotate(Math.PI / 4);
-    fCtx.fillRect(-120, -14, 240, 28);
-    fCtx.beginPath();
-    fCtx.arc(-120, 0, 16, 0, Math.PI * 2);
-    fCtx.arc(120, 0, 16, 0, Math.PI * 2);
-    fCtx.fill();
-    fCtx.restore();
+      // Deep Pirate Fabric Background
+      ctx.fillStyle = '#141413';
+      ctx.fillRect(0, 0, c.width, c.height);
 
-    fCtx.save();
-    fCtx.translate(256, 128);
-    fCtx.rotate(-Math.PI / 4);
-    fCtx.fillRect(-120, -14, 240, 28);
-    fCtx.beginPath();
-    fCtx.arc(-120, 0, 16, 0, Math.PI * 2);
-    fCtx.arc(120, 0, 16, 0, Math.PI * 2);
-    fCtx.fill();
-    fCtx.restore();
+      // Double Golden Ornate Border
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.55)';
+      ctx.lineWidth = 18;
+      ctx.strokeRect(28, 28, c.width - 56, c.height - 56);
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.25)';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(52, 52, c.width - 104, c.height - 104);
 
-    // Skull Head Base
-    fCtx.fillStyle = '#f5f5f4';
-    fCtx.beginPath();
-    fCtx.arc(256, 102, 48, 0, Math.PI * 2);
-    fCtx.rect(224, 106, 64, 54);
-    fCtx.fill();
+      ctx.save();
+      ctx.translate(c.width / 2, c.height / 2);
 
-    // Eye Sockets
-    fCtx.fillStyle = '#17191c';
-    fCtx.beginPath();
-    fCtx.arc(238, 96, 13, 0, Math.PI * 2);
-    fCtx.arc(274, 96, 13, 0, Math.PI * 2);
-    fCtx.fill();
+      // Crossed Cutlass Swords / Bones
+      ctx.strokeStyle = '#f5f5f4';
+      ctx.fillStyle = '#f5f5f4';
+      ctx.lineWidth = 32;
+      ctx.lineCap = 'round';
 
-    // Nose Cavity
-    fCtx.beginPath();
-    fCtx.moveTo(256, 112);
-    fCtx.lineTo(247, 132);
-    fCtx.lineTo(265, 132);
-    fCtx.closePath();
-    fCtx.fill();
+      [-0.52, 0.52].forEach(angle => {
+        ctx.save();
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.moveTo(-225, 0);
+        ctx.lineTo(225, 0);
+        ctx.stroke();
+        [-225, 225].forEach(endX => {
+          ctx.beginPath();
+          ctx.arc(endX, -22, 24, 0, Math.PI * 2);
+          ctx.arc(endX, 22, 24, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        ctx.restore();
+      });
 
-    // Teeth
-    fCtx.fillStyle = '#17191c';
-    fCtx.fillRect(232, 145, 48, 12);
-    fCtx.fillStyle = '#f5f5f4';
-    for(let tx = 238; tx < 274; tx += 9) {
-      fCtx.fillRect(tx, 145, 4, 12);
+      // Crisp Skull Head
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(0, -34, 112, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Jaw
+      ctx.beginPath();
+      ctx.roundRect(-62, 32, 124, 76, 20);
+      ctx.fill();
+
+      // Red Captain Bandana + Knot
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath();
+      ctx.arc(0, -44, 114, Math.PI * 1.06, Math.PI * 1.94);
+      ctx.fill();
+
+      // Golden Crown / Emblem Accent on Bandana
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.moveTo(-28, -98);
+      ctx.lineTo(-14, -124);
+      ctx.lineTo(0, -104);
+      ctx.lineTo(14, -124);
+      ctx.lineTo(28, -98);
+      ctx.closePath();
+      ctx.fill();
+
+      // Eye Sockets
+      ctx.fillStyle = '#141413';
+      ctx.beginPath();
+      ctx.arc(-42, -26, 26, 0, Math.PI * 2);
+      ctx.arc(42, -26, 26, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Nose Cavity
+      ctx.beginPath();
+      ctx.moveTo(0, -2);
+      ctx.lineTo(-17, 28);
+      ctx.lineTo(17, 28);
+      ctx.closePath();
+      ctx.fill();
+
+      // Teeth lines
+      ctx.strokeStyle = '#141413';
+      ctx.lineWidth = 8;
+      [-32, 0, 32].forEach(tx => {
+        ctx.beginPath();
+        ctx.moveTo(tx, 58);
+        ctx.lineTo(tx, 102);
+        ctx.stroke();
+      });
+
+      ctx.restore();
+      return c;
     }
 
+    const flagCanvas = createJollyRogerTexture();
     const flagTexture = new THREE.CanvasTexture(flagCanvas);
-    materials.sailJollyRoger = new THREE.MeshLambertMaterial({
+    flagTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    materials.sailJollyRoger = new THREE.MeshStandardMaterial({
       color: 0xffffff,
       map: flagTexture,
+      roughness: 0.8,
       side: THREE.DoubleSide
     });
 
-    const oceanSegments = isMobileScreen ? 20 : 32;
-    const oceanGeo = new THREE.PlaneGeometry(160, 160, oceanSegments, oceanSegments);
-    oceanGeo.rotateX(-Math.PI / 2);
-    const oceanMat = new THREE.MeshStandardMaterial({
-      color: initialPal.seaColor,
-      emissive: initialPal.seaEmissive,
-      roughness: 0.15,
-      metalness: 0.1
+    // ============================================================================
+    // OCEAN WATER MESH & WAVE FUNCTION
+    // ============================================================================
+    const waterSegs = isMobileScreen ? 32 : 48;
+    const waterGeo = new THREE.PlaneGeometry(240, 240, waterSegs, waterSegs);
+    waterGeo.rotateX(-Math.PI / 2);
+    const waterPosAttr = waterGeo.attributes.position;
+    const waterOrigCoords = [];
+    for (let i = 0; i < waterPosAttr.count; i++) {
+      waterOrigCoords.push({
+        x: waterPosAttr.getX(i),
+        z: waterPosAttr.getZ(i)
+      });
+    }
+
+    const waterMat = new THREE.MeshStandardMaterial({
+      color: THEMES.day.waterColor,
+      roughness: 0.42,
+      metalness: 0.12,
+      flatShading: true
     });
-    const oceanMesh = new THREE.Mesh(oceanGeo, oceanMat);
-    oceanMesh.receiveShadow = !isMobileScreen;
-    scene.add(oceanMesh);
+    const waterMesh = new THREE.Mesh(waterGeo, waterMat);
+    waterMesh.receiveShadow = true;
+    scene.add(waterMesh);
 
-    const oceanPosAttr = oceanMesh.geometry.attributes.position;
-    const oceanBaseVertices = [];
-    for (let i = 0; i < oceanPosAttr.count; i++) {
-      oceanBaseVertices.push(new THREE.Vector3(oceanPosAttr.getX(i), oceanPosAttr.getY(i), oceanPosAttr.getZ(i)));
+    function getWaveHeightAt(x, z, time) {
+      return (
+        Math.sin(x * 0.18 + time * 1.6) * 0.12 +
+        Math.cos(z * 0.15 + time * 1.3) * 0.1
+      );
     }
 
-    const ringGeo = new THREE.RingGeometry(0.8, 1.0, 16);
-    ringGeo.rotateX(-Math.PI / 2);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0xf39c12, side: THREE.DoubleSide, transparent: true, opacity: 0.85 });
-    const targetRing = new THREE.Mesh(ringGeo, ringMat);
-    targetRing.position.y = 0.08;
-    scene.add(targetRing);
+    // ============================================================================
+    // DETAILED ISLAND BUILDERS (TAVERNS, FORTRESS, PALMS, LANTERNS, CLOUDS, BIRDS)
+    // ============================================================================
+    const islandPositions3D = {
+      haven: new THREE.Vector3(-4.5, 2.2, 1.5),
+      vault: new THREE.Vector3(-19.5, 2.2, -9.5),
+      log: new THREE.Vector3(11.5, 2.2, -10.5),
+      signal: new THREE.Vector3(10.5, 2.2, 11.5)
+    };
 
-    const targetMarkerGroup = new THREE.Group();
-    const beaconCol = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.2, 5), materials.gold);
-    beaconCol.position.y = 1.1;
-    targetMarkerGroup.add(beaconCol, targetRing);
-    scene.add(targetMarkerGroup);
+    const islandDockTargets = {
+      haven: { x: -4.5, z: 6.5, rot: -0.3 },
+      vault: { x: -15.5, z: -5.2, rot: 0.65 },
+      log: { x: 8.2, z: -6.0, rot: -0.6 },
+      signal: { x: 6.8, z: 8.5, rot: -2.2 }
+    };
 
-    let galleonGroup;
-    let shipInnerMesh;
-    const shipLanternLight = new THREE.PointLight(0xff9922, 1.8, 6);
+    const clickableIslandObjects = [];
+    const animatedProps = [];
+    const seaBirds = [];
+    const skyClouds = [];
 
-    function fnCreateNPC() {
-      const npc = new THREE.Group();
-      const body = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.35, 0.18), materials.villagerShirt);
-      body.position.y = 0.35;
-      body.castShadow = true;
-      npc.add(body);
-      const head = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.18), materials.villagerSkin);
-      head.position.y = 0.62;
-      head.castShadow = true;
-      npc.add(head);
-      const hat = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.08, 0.22), materials.darkWood);
-      hat.position.y = 0.74;
-      npc.add(hat);
-      return npc;
+    function enableShadowRecursive(obj) {
+      obj.traverse(child => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
     }
 
-    function fnCreateChest() {
+    function createMiniCharacter(shirtMat, hasHat = false, hasSword = false) {
+      const charGroup = new THREE.Group();
+
+      // Boots/Legs
+      const legs = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.12, 0.2, 7), materials.pirateBlack);
+      legs.position.y = 0.1;
+      charGroup.add(legs);
+
+      // Torso
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.34, 8), shirtMat);
+      body.position.y = 0.34;
+      charGroup.add(body);
+
+      // Belt & Gold Buckle
+      const belt = new THREE.Mesh(new THREE.CylinderGeometry(0.155, 0.155, 0.06, 8), materials.woodDark);
+      belt.position.y = 0.24;
+      charGroup.add(belt);
+
+      // Arms
+      [-0.18, 0.18].forEach((ax, idx) => {
+        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.04, 0.26, 6), shirtMat);
+        arm.position.set(ax, 0.34, 0);
+        arm.rotation.z = idx === 0 ? 0.25 : -0.25;
+        charGroup.add(arm);
+      });
+
+      // Head
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.135, 10, 10), materials.skin);
+      head.position.y = 0.6;
+      charGroup.add(head);
+
+      // Eyes
+      [-0.045, 0.045].forEach(ex => {
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.02, 6, 6), materials.pirateBlack);
+        eye.position.set(ex, 0.62, 0.12);
+        charGroup.add(eye);
+      });
+
+      if (hasHat) {
+        // Tricorn Pirate Hat + Gold Trim
+        const hatBrim = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.05, 3), materials.pirateBlack);
+        hatBrim.position.y = 0.72;
+        charGroup.add(hatBrim);
+        const hatCrown = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.12, 7), materials.pirateRed);
+        hatCrown.position.y = 0.76;
+        charGroup.add(hatCrown);
+      }
+
+      if (hasSword) {
+        const sword = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.36, 0.06), materials.gold);
+        sword.position.set(0.24, 0.42, 0.12);
+        sword.rotation.x = 0.6;
+        charGroup.add(sword);
+      }
+
+      enableShadowRecursive(charGroup);
+      return charGroup;
+    }
+
+    function createTreasureChest(isOpen = false) {
       const chest = new THREE.Group();
-      const base = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.28, 0.32), materials.darkWood);
-      base.position.y = 0.14;
-      base.castShadow = true;
-      const lid = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.45, 5, 1, false, 0, Math.PI), materials.gold);
+      const base = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.32, 0.42), materials.woodDark);
+      base.position.y = 0.16;
+      chest.add(base);
+
+      // Curved Lid
+      const lid = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.21, 0.6, 8, 1, false, 0, Math.PI), materials.woodMid);
       lid.rotation.z = Math.PI / 2;
-      lid.position.y = 0.28;
-      chest.add(base, lid);
+      lid.position.set(0, 0.32, isOpen ? -0.08 : 0);
+      if (isOpen) lid.rotation.x = -0.55;
+      chest.add(lid);
+
+      // Gold Bands & Lock
+      [-0.22, 0.22].forEach(bx => {
+        const band = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.34, 0.44), materials.gold);
+        band.position.set(bx, 0.17, 0);
+        chest.add(band);
+      });
+
+      const lock = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.16, 0.45), materials.gold);
+      lock.position.y = 0.24;
+      chest.add(lock);
+
+      if (isOpen) {
+        const goldInside = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.12, 0.32), materials.gold);
+        goldInside.position.y = 0.31;
+        chest.add(goldInside);
+      }
+
+      enableShadowRecursive(chest);
       return chest;
     }
 
-    function buildPirateGalleon() {
-      const root = new THREE.Group();
-      const ship = new THREE.Group();
-
-      const hullGeo = new THREE.BoxGeometry(1.85, 1.15, 4.9);
-      const pos = hullGeo.attributes.position;
-      for (let i = 0; i < pos.count; i++) {
-        let x = pos.getX(i);
-        let y = pos.getY(i);
-        let z = pos.getZ(i);
-
-        if (z < -0.8) {
-          const taper = (z + 0.8) / -1.65;
-          x *= Math.max(0.16, 1 - taper * 0.74);
-          if (y < 0) y += taper * 0.35;
-        }
-        if (z > 0.8 && y > 0) {
-          y += (z - 0.8) * 0.42;
-        }
-        if (y < 0) x *= 0.68;
-        pos.setXYZ(i, x, y, z);
-      }
-      hullGeo.computeVertexNormals();
-
-      const hull = new THREE.Mesh(hullGeo, materials.hullWood);
-      hull.castShadow = true;
-      hull.receiveShadow = true;
-      ship.add(hull);
-
-      const deckGeo = new THREE.BoxGeometry(1.65, 0.1, 4.5);
-      const deck = new THREE.Mesh(deckGeo, materials.lightWood);
-      deck.position.y = 0.55;
-      ship.add(deck);
-
-      const cabinGeo = new THREE.BoxGeometry(1.5, 0.9, 1.45);
-      const cabin = new THREE.Mesh(cabinGeo, materials.darkWood);
-      cabin.position.set(0, 0.98, 1.42);
-      cabin.castShadow = true;
-      ship.add(cabin);
-
-      const lanternGeo = new THREE.DodecahedronGeometry(0.14, 0);
-      const lanternStern = new THREE.Mesh(lanternGeo, materials.lanternGlow);
-      lanternStern.position.set(0, 1.45, 2.3);
-      ship.add(lanternStern);
-      ship.add(shipLanternLight);
-
-      const bowspritGeo = new THREE.CylinderGeometry(0.05, 0.11, 2.3, 5);
-      bowspritGeo.rotateX(-Math.PI / 3);
-      const bowsprit = new THREE.Mesh(bowspritGeo, materials.darkWood);
-      bowsprit.position.set(0, 0.65, -2.85);
-      ship.add(bowsprit);
-
-      const captainNPC = fnCreateNPC();
-      captainNPC.position.set(0, 0.6, 1.1);
-      ship.add(captainNPC);
-
-      const crew1 = fnCreateNPC();
-      crew1.position.set(-0.4, 0.6, -0.8);
-      ship.add(crew1);
-
-      const crew2 = fnCreateNPC();
-      crew2.position.set(0.4, 0.6, 0.2);
-      ship.add(crew2);
-
-      const cannonGeo = new THREE.CylinderGeometry(0.08, 0.11, 0.7, 5);
-      cannonGeo.rotateZ(Math.PI / 2);
-      for (let side of [-1, 1]) {
-        for (let cz = -0.8; cz <= 0.8; cz += 0.8) {
-          const cannon = new THREE.Mesh(cannonGeo, materials.gold);
-          cannon.position.set(side * 0.95, 0.25, cz);
-          cannon.castShadow = true;
-          ship.add(cannon);
-        }
-      }
-
-      const mainMastGeo = new THREE.CylinderGeometry(0.09, 0.12, 4.5, 5);
-      const mainMast = new THREE.Mesh(mainMastGeo, materials.darkWood);
-      mainMast.position.set(0, 2.25, -0.2);
-      mainMast.castShadow = true;
-      ship.add(mainMast);
-
-      const foreMastGeo = new THREE.CylinderGeometry(0.07, 0.1, 3.6, 5);
-      const foreMast = new THREE.Mesh(foreMastGeo, materials.darkWood);
-      foreMast.position.set(0, 1.8, -1.55);
-      foreMast.castShadow = true;
-      ship.add(foreMast);
-
-      const mainSailGeo = new THREE.PlaneGeometry(2.0, 1.0);
-      const mainSail = new THREE.Mesh(mainSailGeo, materials.sailJollyRoger);
-      mainSail.rotation.y = Math.PI;
-      mainSail.position.set(0, 2.6, -0.35);
-      mainSail.castShadow = true;
-      ship.add(mainSail);
-
-      const foreSailGeo = new THREE.PlaneGeometry(1.5, 0.8);
-      const foreSail = new THREE.Mesh(foreSailGeo, materials.sailPlain);
-      foreSail.position.set(0, 2.1, -1.7);
-      foreSail.castShadow = true;
-      ship.add(foreSail);
-
-      const yardGeo = new THREE.CylinderGeometry(0.04, 0.04, 2.4, 4);
-      yardGeo.rotateZ(Math.PI / 2);
-      const yard1 = new THREE.Mesh(yardGeo, materials.lightWood);
-      yard1.position.set(0, 3.45, -0.3);
-      ship.add(yard1);
-
-      ship.scale.set(0.85, 0.85, 0.85);
-      shipInnerMesh = ship;
-      root.add(shipInnerMesh);
-      return root;
-    }
-
-    galleonGroup = buildPirateGalleon();
-    galleonGroup.position.set(
-      PIRATE_ISLANDS.haven.dockPosition.x,
-      PIRATE_ISLANDS.haven.dockPosition.y,
-      PIRATE_ISLANDS.haven.dockPosition.z
-    );
-    galleonGroup.rotation.y = PIRATE_ISLANDS.haven.dockRotationY;
-    scene.add(galleonGroup);
-
-    const wakeParticles = [];
-    const foamGeo = new THREE.RingGeometry(0.15, 0.32, 8);
-    foamGeo.rotateX(-Math.PI / 2);
-    const smokeGeo = new THREE.DodecahedronGeometry(0.22, 0);
-
-    function spawnWakeParticle(isCannonSmoke = false, sideOffset = 0) {
-      if (isCannonSmoke) {
-        const mat = materials.wakeFoam.clone();
-        mat.color.setHex(0xffb86c);
-        const p = new THREE.Mesh(smokeGeo, mat);
-        
-        const localOffset = new THREE.Vector3(sideOffset * 1.15, 0.35, 0);
-        localOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), galleonGroup.rotation.y);
-        p.position.copy(galleonGroup.position).add(localOffset);
-        p.position.y = Math.max(p.position.y, 0.4);
-
-        const vel = new THREE.Vector3(sideOffset * (3.5 + Math.random() * 2), 0.6 + Math.random() * 0.5, (Math.random() - 0.5) * 1.5)
-          .applyAxisAngle(new THREE.Vector3(0, 1, 0), galleonGroup.rotation.y);
-
-        scene.add(p);
-        wakeParticles.push({ mesh: p, vel, life: 1.0, decay: 1.5, isWaterRipple: false });
-      } else {
-        const mat = materials.wakeFoam.clone();
-        const p = new THREE.Mesh(foamGeo, mat);
-        const localOffset = new THREE.Vector3((Math.random() - 0.5) * 0.6, 0, 2.1);
-        localOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), galleonGroup.rotation.y);
-        p.position.set(
-          galleonGroup.position.x + localOffset.x,
-          0.08,
-          galleonGroup.position.z + localOffset.z
-        );
-        scene.add(p);
-        wakeParticles.push({ mesh: p, vel: new THREE.Vector3(0, 0, 0), life: 1.0, decay: 0.9, isWaterRipple: true });
-      }
-    }
-
-    function fireBroadsideCannons() {
-      playCannonBoom();
-      for (let i = 0; i < 4; i++) {
-        spawnWakeParticle(true, -1);
-        spawnWakeParticle(true, 1);
-      }
-    }
-
-    function createTropicalIslandBase(radius = 4.2, height = 1.4) {
-      const group = new THREE.Group();
-
-      const lagoonGeo = new THREE.CircleGeometry(radius * 1.45, 16);
-      lagoonGeo.rotateX(-Math.PI / 2);
-      const lagoon = new THREE.Mesh(lagoonGeo, materials.shallowWater);
-      lagoon.position.y = 0.03;
-      group.add(lagoon);
-
-      const foamRingGeo = new THREE.RingGeometry(radius * 1.02, radius * 1.1, 16);
-      foamRingGeo.rotateX(-Math.PI / 2);
-      const foamRing = new THREE.Mesh(foamRingGeo, materials.shoreFoam);
-      foamRing.position.y = 0.05;
-      group.add(foamRing);
-
-      const sandGeo = new THREE.CylinderGeometry(radius * 0.82, radius * 1.08, height * 0.55, 10);
-      const sand = new THREE.Mesh(sandGeo, materials.sandBeach);
-      sand.position.y = height * 0.22;
-      sand.receiveShadow = true;
-      group.add(sand);
-
-      const turfGeo = new THREE.CylinderGeometry(radius * 0.68, radius * 0.82, height * 0.45, 10);
-      const turf = new THREE.Mesh(turfGeo, materials.turfGrass);
-      turf.position.y = height * 0.55;
-      turf.receiveShadow = true;
-      turf.castShadow = true;
-      group.add(turf);
-
-      return { group, foamRing, topY: height * 0.78 };
+    function createWoodBarrel() {
+      const barrel = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.42, 9), materials.woodMid);
+      body.position.y = 0.21;
+      barrel.add(body);
+      [0.1, 0.32].forEach(hy => {
+        const hoop = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.19, 0.04, 9), materials.iron);
+        hoop.position.y = hy;
+        barrel.add(hoop);
+      });
+      enableShadowRecursive(barrel);
+      return barrel;
     }
 
     function createPalmTree(scale = 1) {
       const tree = new THREE.Group();
-      const trunkGeo = new THREE.CylinderGeometry(0.09 * scale, 0.15 * scale, 1.45 * scale, 4);
-      trunkGeo.rotateZ(0.16);
-      const trunk = new THREE.Mesh(trunkGeo, materials.darkWood);
-      trunk.position.y = 0.7 * scale;
-      trunk.castShadow = true;
-      tree.add(trunk);
-
-      for (let i = 0; i < 4; i++) {
-        const frondGeo = new THREE.ConeGeometry(0.45 * scale, 1.2 * scale, 4);
-        frondGeo.rotateX(Math.PI / 2.3);
-        const frond = new THREE.Mesh(frondGeo, materials.foliageGreen);
-        frond.rotation.y = (Math.PI * 2 / 4) * i;
-        frond.position.y = 1.38 * scale;
-        frond.castShadow = true;
-        tree.add(frond);
+      // Segmented Curved Trunk
+      const segments = 5;
+      for (let i = 0; i < segments; i++) {
+        const rTop = 0.16 - i * 0.018;
+        const rBot = 0.18 - i * 0.018;
+        const seg = new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBot, 0.42, 7), i % 2 === 0 ? materials.woodLight : materials.woodMid);
+        seg.position.set(Math.sin(i * 0.25) * 0.18, 0.2 + i * 0.36, 0);
+        seg.rotation.z = -i * 0.07;
+        tree.add(seg);
       }
+
+      const topPos = new THREE.Vector3(Math.sin(4 * 0.25) * 0.18, 1.9, 0);
+
+      // Coconuts
+      for (let c = 0; c < 3; c++) {
+        const coco = new THREE.Mesh(new THREE.SphereGeometry(0.08, 6, 6), materials.woodDark);
+        const angle = (c / 3) * Math.PI * 2;
+        coco.position.set(topPos.x + Math.cos(angle) * 0.12, topPos.y - 0.05, Math.sin(angle) * 0.12);
+        tree.add(coco);
+      }
+
+      // 6 Lush Fronds
+      for (let f = 0; f < 6; f++) {
+        const frondGroup = new THREE.Group();
+        frondGroup.position.copy(topPos);
+        frondGroup.rotation.y = (f / 6) * Math.PI * 2;
+
+        const leaf = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.06, 1.15), f % 2 === 0 ? materials.grass : materials.grassDark);
+        leaf.position.set(0, 0.05, 0.55);
+        leaf.rotation.x = 0.38;
+        frondGroup.add(leaf);
+        tree.add(frondGroup);
+      }
+
+      tree.scale.setScalar(scale);
+      enableShadowRecursive(tree);
       return tree;
     }
 
-    function createCoastalRock(scale = 1) {
-      const rGeo = new THREE.DodecahedronGeometry(0.55 * scale, 0);
-      const r = new THREE.Mesh(rGeo, materials.islandRock);
-      r.scale.y = 0.65;
-      r.castShadow = true;
-      r.receiveShadow = true;
-      return r;
+    function createTavernHouse() {
+      const house = new THREE.Group();
+
+      // Stone Foundation
+      const found = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.22, 1.45), materials.rock);
+      found.position.y = 0.11;
+      house.add(found);
+
+      // Main Timber-Framed Walls
+      const walls = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.15, 1.3), materials.houseWall);
+      walls.position.y = 0.78;
+      house.add(walls);
+
+      // Corner Wood Pillars
+      [[-0.8, -0.65], [0.8, -0.65], [-0.8, 0.65], [0.8, 0.65]].forEach(([px, pz]) => {
+        const beam = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.18, 0.1), materials.woodDark);
+        beam.position.set(px, 0.78, pz);
+        house.add(beam);
+      });
+
+      // Pitched Roof + Overhang
+      const roof = new THREE.Mesh(new THREE.ConeGeometry(1.42, 0.95, 4), materials.houseRoof);
+      roof.position.y = 1.82;
+      roof.rotation.y = Math.PI / 4;
+      house.add(roof);
+
+      // Stone Chimney
+      const chimney = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.75, 0.28), materials.rockDark);
+      chimney.position.set(0.45, 1.95, -0.25);
+      house.add(chimney);
+
+      // Wooden Door + Frame
+      const door = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.68, 0.08), materials.woodDark);
+      door.position.set(0, 0.55, 0.64);
+      house.add(door);
+
+      // Glowing Tavern Windows
+      [-0.48, 0.48].forEach(wx => {
+        const winFrame = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.28, 0.08), materials.woodDark);
+        winFrame.position.set(wx, 0.85, 0.64);
+        house.add(winFrame);
+
+        const winPane = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.1), materials.windowGlow);
+        winPane.position.set(wx, 0.85, 0.64);
+        house.add(winPane);
+      });
+
+      // Side Window
+      const sideWin = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.28, 0.28), materials.windowGlow);
+      sideWin.position.set(0.8, 0.85, 0);
+      house.add(sideWin);
+
+      enableShadowRecursive(house);
+      return house;
     }
 
-    function createWoodenPier() {
-      const pier = new THREE.Group();
-      const plankGeo = new THREE.BoxGeometry(1.25, 0.12, 3.2);
-      const plank = new THREE.Mesh(plankGeo, materials.lightWood);
-      plank.position.y = 0.42;
-      plank.castShadow = true;
-      pier.add(plank);
+    function createDetailedDock(length = 2.6) {
+      const dockGroup = new THREE.Group();
 
-      const postGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.9, 4);
-      for (let px of [-0.5, 0.5]) {
-        for (let pz of [-1.2, 0, 1.2]) {
-          const post = new THREE.Mesh(postGeo, materials.darkWood);
-          post.position.set(px, 0.15, pz);
-          pier.add(post);
-        }
-      }
-      return pier;
-    }
+      // Support Pilings + Rope Bollards
+      const postPositions = [
+        [-0.48, -length * 0.35], [0.48, -length * 0.35],
+        [-0.48, 0], [0.48, 0],
+        [-0.48, length * 0.38], [0.48, length * 0.38]
+      ];
+      postPositions.forEach(([px, pz], idx) => {
+        const post = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.09, 0.95, 7), materials.woodDark);
+        post.position.set(px, 0.18, pz);
+        dockGroup.add(post);
 
-    const islandMeshes = {};
-    const islandFoamRings = [];
-    const islandPositions3D = {};
-
-    // 1. HAVEN ISLAND (About)
-    {
-      const { group: haven, foamRing, topY } = createTropicalIslandBase(4.4, 1.3);
-      haven.position.set(PIRATE_ISLANDS.haven.position.x, 0, PIRATE_ISLANDS.haven.position.z);
-      islandFoamRings.push(foamRing);
-
-      const tavernGeo = new THREE.BoxGeometry(1.6, 1.25, 1.4);
-      const tavern = new THREE.Mesh(tavernGeo, materials.darkWood);
-      tavern.position.set(0.5, topY + 0.6, -0.5);
-      tavern.castShadow = true;
-      haven.add(tavern);
-
-      const roofGeo = new THREE.ConeGeometry(1.4, 0.8, 4);
-      roofGeo.rotateY(Math.PI / 4);
-      const roof = new THREE.Mesh(roofGeo, materials.hullWood);
-      roof.position.set(0.5, topY + 1.6, -0.5);
-      haven.add(roof);
-
-      const pier = createWoodenPier();
-      pier.position.set(-2.6, 0, 2.4);
-      pier.rotation.y = -Math.PI / 4;
-      haven.add(pier);
-
-      const npc1 = fnCreateNPC();
-      npc1.position.set(-0.8, topY, 0.8);
-      haven.add(npc1);
-
-      const chest1 = fnCreateChest();
-      chest1.position.set(-1.2, topY, -0.4);
-      haven.add(chest1);
-
-      const p1 = createPalmTree(1.15); p1.position.set(1.8, topY, 1.2); haven.add(p1);
-      const p2 = createPalmTree(0.85); p2.position.set(-1.6, topY, -1.3); haven.add(p2);
-
-      scene.add(haven);
-      islandMeshes.haven = haven;
-      islandPositions3D.haven = new THREE.Vector3(0, 3.2, 0);
-    }
-
-    // 2. VAULT ISLAND (Pricelist)
-    {
-      const { group: vault, foamRing, topY } = createTropicalIslandBase(3.6, 1.25);
-      vault.position.set(PIRATE_ISLANDS.vault.position.x, 0, PIRATE_ISLANDS.vault.position.z);
-      islandFoamRings.push(foamRing);
-
-      const chest = fnCreateChest();
-      chest.position.set(0, topY, 0);
-      chest.rotation.y = Math.PI / 5;
-      vault.add(chest);
-
-      const vaultHouse = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.9, 1.1), materials.hullWood);
-      vaultHouse.position.set(-1.0, topY + 0.45, -0.8);
-      vault.add(vaultHouse);
-
-      const vaultMerchant = fnCreateNPC();
-      vaultMerchant.position.set(0.8, topY, 0.8);
-      vault.add(vaultMerchant);
-
-      for (let i = 0; i < 4; i++) {
-        const coin = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.08, 6), materials.gold);
-        coin.position.set(Math.cos(i * 1.5) * 0.95, topY + 0.05, Math.sin(i * 1.5) * 0.95);
-        vault.add(coin);
-      }
-
-      const p1 = createPalmTree(1.2); p1.position.set(-1.1, topY, -0.9); vault.add(p1);
-
-      scene.add(vault);
-      islandMeshes.vault = vault;
-      islandPositions3D.vault = new THREE.Vector3(PIRATE_ISLANDS.vault.position.x, 2.8, PIRATE_ISLANDS.vault.position.z);
-    }
-
-    // 3. LOG ISLAND (Testimoni)
-    {
-      const { group: logIsland, foamRing, topY } = createTropicalIslandBase(3.7, 1.25);
-      logIsland.position.set(PIRATE_ISLANDS.log.position.x, 0, PIRATE_ISLANDS.log.position.z);
-      islandFoamRings.push(foamRing);
-
-      const boneMat = new THREE.MeshLambertMaterial({ color: 0xe3dac9 });
-      for (let r = -1; r <= 1; r++) {
-        const ribGeo = new THREE.TorusGeometry(1.15, 0.11, 4, 6, Math.PI * 0.88);
-        const rib = new THREE.Mesh(ribGeo, boneMat);
-        rib.position.set(r * 0.75, topY + 0.2, 0);
-        rib.rotation.y = Math.PI / 2;
-        rib.castShadow = true;
-        logIsland.add(rib);
-      }
-
-      const chest2 = fnCreateChest();
-      chest2.position.set(1.1, topY, 0.6);
-      logIsland.add(chest2);
-
-      const criticNPC = fnCreateNPC();
-      criticNPC.position.set(-0.5, topY, -0.7);
-      logIsland.add(criticNPC);
-
-      const p1 = createPalmTree(1.05); p1.position.set(-1.3, topY, 1.1); logIsland.add(p1);
-
-      scene.add(logIsland);
-      islandMeshes.log = logIsland;
-      islandPositions3D.log = new THREE.Vector3(PIRATE_ISLANDS.log.position.x, 2.8, PIRATE_ISLANDS.log.position.z);
-    }
-
-    // 4. SIGNAL ISLAND (Order & Kontak)
-    {
-      const { group: signalIsland, foamRing, topY } = createTropicalIslandBase(3.1, 1.2);
-      signalIsland.position.set(PIRATE_ISLANDS.signal.position.x, 0, PIRATE_ISLANDS.signal.position.z);
-      islandFoamRings.push(foamRing);
-
-      const tower = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.62, 2.8, 4), materials.darkWood);
-      tower.position.set(0, topY + 1.35, 0);
-      tower.castShadow = true;
-      signalIsland.add(tower);
-
-      const brazier = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.25, 0.3, 5), materials.metalIron);
-      brazier.position.set(0, topY + 2.85, 0);
-      signalIsland.add(brazier);
-
-      const flame = new THREE.Mesh(new THREE.DodecahedronGeometry(0.3, 0), materials.ember);
-      flame.position.set(0, topY + 3.15, 0);
-      signalIsland.add(flame);
-
-      const beaconLight = new THREE.PointLight(0xff6622, 2.4, 9);
-      beaconLight.position.set(0, topY + 3.3, 0);
-      signalIsland.add(beaconLight);
-
-      const guardNPC = fnCreateNPC();
-      guardNPC.position.set(0.9, topY, 0.5);
-      signalIsland.add(guardNPC);
-
-      const chest3 = fnCreateChest();
-      chest3.position.set(-0.9, topY, 0.6);
-      signalIsland.add(chest3);
-
-      scene.add(signalIsland);
-      islandMeshes.signal = signalIsland;
-      islandPositions3D.signal = new THREE.Vector3(PIRATE_ISLANDS.signal.position.x, 3.8, PIRATE_ISLANDS.signal.position.z);
-    }
-
-    const clickableIslandObjects = [];
-    Object.keys(islandMeshes).forEach((islandKey) => {
-      islandMeshes[islandKey].traverse((child) => {
-        if (child.isMesh) {
-          child.userData.islandId = islandKey;
-          clickableIslandObjects.push(child);
+        if (idx >= 4) {
+          const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.06, 7), materials.gold);
+          cap.position.set(px, 0.68, pz);
+          dockGroup.add(cap);
         }
       });
-    });
 
-    for (let i = 0; i < 10; i++) {
-      const ang = (i / 10) * Math.PI * 2 + 0.4;
-      const rad = 18 + Math.random() * 20;
-      const seaRock = createCoastalRock(1.2 + Math.random() * 1.2);
-      seaRock.position.set(Math.cos(ang) * rad, 0.1, Math.sin(ang) * rad);
-      scene.add(seaRock);
+      // Individual Wooden Planks
+      const numPlanks = 9;
+      for (let i = 0; i < numPlanks; i++) {
+        const plank = new THREE.Mesh(
+          new THREE.BoxGeometry(1.12, 0.08, (length / numPlanks) * 0.84),
+          i % 2 === 0 ? materials.woodLight : materials.woodMid
+        );
+        plank.position.set(0, 0.42, -length / 2 + (i + 0.5) * (length / numPlanks));
+        dockGroup.add(plank);
+      }
+
+      // Hanging Dock Lantern Post at End
+      const lampPost = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 1.15, 6), materials.woodDark);
+      lampPost.position.set(0.48, 0.95, length * 0.38);
+      dockGroup.add(lampPost);
+
+      const lampArm = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.05, 0.05), materials.woodDark);
+      lampArm.position.set(0.35, 1.48, length * 0.38);
+      dockGroup.add(lampArm);
+
+      const lantern = new THREE.Mesh(new THREE.OctahedronGeometry(0.12, 0), materials.lanternGlow);
+      lantern.position.set(0.22, 1.34, length * 0.38);
+      dockGroup.add(lantern);
+
+      enableShadowRecursive(dockGroup);
+      return dockGroup;
     }
 
-    const pinsContainer = document.getElementById('pins-container');
-    const pinElements = {};
+    function buildPirateIsland(id, x, z, radius) {
+      const group = new THREE.Group();
+      group.position.set(x, 0, z);
 
-    Object.keys(PIRATE_ISLANDS).forEach((key) => {
-      const cfg = PIRATE_ISLANDS[key];
-      const pin = document.createElement('button');
-      pin.className = 'island-pin pill-surface px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-bold shadow-md';
-      pin.setAttribute('data-island', key);
-      pin.innerHTML = `
-        <span class="w-1.5 h-1.5 rounded-full ${cfg.badgeColor} shrink-0"></span>
-        <span>${cfg.label}</span>
-        <span class="opacity-60 font-normal hidden xs:inline sm:inline">${cfg.sublabel}</span>
-      `;
-      pin.addEventListener('click', (e) => {
-        e.stopPropagation();
-        tryAutoStartBGM();
-        sailToIsland(key, true);
+      // 1. Shallow Turquoise Lagoon + Animated Coastal Foam Ring
+      const lagoon = new THREE.Mesh(new THREE.CircleGeometry(radius * 1.52, 28), materials.lagoon);
+      lagoon.rotation.x = -Math.PI / 2;
+      lagoon.position.y = 0.03;
+      group.add(lagoon);
+
+      const foam = new THREE.Mesh(new THREE.RingGeometry(radius * 1.05, radius * 1.22, 28), materials.foamRing);
+      foam.rotation.x = -Math.PI / 2;
+      foam.position.y = 0.05;
+      group.add(foam);
+      animatedProps.push({ mesh: foam, baseY: 0.05, phase: x * 0.3, scalePulse: true });
+
+      // 2. Layered Beach Sand + Terraced Grass
+      const wetSand = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.98, radius * 1.18, 0.35, 14), materials.sandWet);
+      wetSand.position.y = 0.14;
+      wetSand.userData = { islandId: id };
+      clickableIslandObjects.push(wetSand);
+      group.add(wetSand);
+
+      const sandCone = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.85, radius * 1.02, 0.58, 14), materials.sand);
+      sandCone.position.y = 0.42;
+      sandCone.userData = { islandId: id };
+      clickableIslandObjects.push(sandCone);
+      group.add(sandCone);
+
+      const grassTop = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.72, radius * 0.84, 0.42, 14), materials.grass);
+      grassTop.position.y = 0.78;
+      grassTop.userData = { islandId: id };
+      clickableIslandObjects.push(grassTop);
+      group.add(grassTop);
+
+      const grassUpper = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.52, radius * 0.65, 0.26, 12), materials.grassDark);
+      grassUpper.position.set(-0.2, 1.02, -0.25);
+      grassUpper.userData = { islandId: id };
+      clickableIslandObjects.push(grassUpper);
+      group.add(grassUpper);
+
+      // 3. Detailed Wooden Pier / Dock
+      const dock = createDetailedDock(2.5);
+      dock.position.set(0, 0, radius * 1.02);
+      dock.traverse(c => {
+        if (c.isMesh) {
+          c.userData = { islandId: id };
+          clickableIslandObjects.push(c);
+        }
       });
-      pinsContainer.appendChild(pin);
-      pinElements[key] = pin;
+      group.add(dock);
+
+      // 4. Perimeter Coastal Rocks & Bushes
+      for (let r = 0; r < 5; r++) {
+        const ang = (r / 5) * Math.PI * 1.5 - 2.3;
+        const dist = radius * (0.78 + (r % 2) * 0.15);
+        const cliffRock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.32 + (r % 3) * 0.14, 0), r % 2 === 0 ? materials.rock : materials.rockDark);
+        cliffRock.position.set(Math.cos(ang) * dist, 0.55, Math.sin(ang) * dist);
+        cliffRock.rotation.set(r, r * 0.8, 0);
+        group.add(cliffRock);
+      }
+
+      // 5. Island-Specific Architecture, Props & Characters
+      if (id === 'haven') {
+        const house = createTavernHouse();
+        house.position.set(-0.35, 1.12, -0.35);
+        house.rotation.y = 0.18;
+        group.add(house);
+
+        const tree1 = createPalmTree(1.08);
+        tree1.position.set(1.45, 0.95, -0.55);
+        group.add(tree1);
+
+        const tree2 = createPalmTree(0.82);
+        tree2.position.set(-1.65, 0.92, 0.25);
+        tree2.rotation.y = 2.2;
+        group.add(tree2);
+
+        const villager = createMiniCharacter(materials.pirateRed, true, true);
+        villager.position.set(0.85, 0.98, 0.85);
+        group.add(villager);
+        animatedProps.push({ mesh: villager, baseY: 0.98, phase: 0.5 });
+
+        const chest = createTreasureChest(true);
+        chest.position.set(-1.15, 0.98, 0.78);
+        chest.rotation.y = 0.45;
+        group.add(chest);
+
+        const barrel1 = createWoodBarrel();
+        barrel1.position.set(0.65, 1.12, -0.2);
+        group.add(barrel1);
+      } else if (id === 'vault') {
+        // Stone Treasure Fortress Ruin Arch + Vault
+        const stonePlatform = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.6, 0.28, 8), materials.rock);
+        stonePlatform.position.set(-0.15, 1.22, -0.2);
+        group.add(stonePlatform);
+
+        const chestMain = createTreasureChest(true);
+        chestMain.scale.setScalar(1.42);
+        chestMain.position.set(-0.15, 1.36, -0.2);
+        group.add(chestMain);
+
+        // Sparkling Gold Doubloon Mounds
+        [[-1.05, -0.35, 0.55], [0.75, -0.5, 0.42], [-0.7, 0.55, 0.35]].forEach(([gx, gz, gs]) => {
+          const goldPile = new THREE.Mesh(new THREE.DodecahedronGeometry(gs, 1), materials.gold);
+          goldPile.scale.y = 0.65;
+          goldPile.position.set(gx, 1.08, gz);
+          group.add(goldPile);
+        });
+
+        const guard = createMiniCharacter(materials.pirateBlue, true, true);
+        guard.position.set(0.95, 0.98, 0.65);
+        group.add(guard);
+        animatedProps.push({ mesh: guard, baseY: 0.98, phase: 1.7 });
+
+        const tree = createPalmTree(0.98);
+        tree.position.set(-1.35, 0.95, 0.65);
+        group.add(tree);
+
+        const tree2 = createPalmTree(0.76);
+        tree2.position.set(1.25, 0.95, -0.85);
+        tree2.rotation.y = -1.4;
+        group.add(tree2);
+      } else if (id === 'log') {
+        const house = createTavernHouse();
+        house.scale.setScalar(0.88);
+        house.position.set(0.45, 1.12, -0.45);
+        house.rotation.y = -0.25;
+        group.add(house);
+
+        const rockArch = new THREE.Mesh(new THREE.TorusGeometry(1.05, 0.26, 7, 12, Math.PI), materials.rock);
+        rockArch.position.set(-0.75, 0.98, 0.05);
+        rockArch.rotation.y = 0.4;
+        group.add(rockArch);
+
+        const tree = createPalmTree(0.92);
+        tree.position.set(-1.3, 0.95, -0.75);
+        group.add(tree);
+
+        const villager = createMiniCharacter(materials.pirateBlack, true, false);
+        villager.position.set(-0.2, 0.98, 0.95);
+        group.add(villager);
+        animatedProps.push({ mesh: villager, baseY: 0.98, phase: 2.9 });
+
+        const barrel = createWoodBarrel();
+        barrel.position.set(1.15, 0.98, 0.45);
+        group.add(barrel);
+      } else if (id === 'signal') {
+        // Multi-tiered Lighthouse / Signal Watchtower
+        const towerBase = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.78, 1.1, 8), materials.rock);
+        towerBase.position.set(0, 1.55, -0.25);
+        group.add(towerBase);
+
+        const towerMid = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.58, 1.4, 8), materials.houseWall);
+        towerMid.position.set(0, 2.75, -0.25);
+        group.add(towerMid);
+
+        const towerBalcony = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.55, 0.16, 8), materials.woodDark);
+        towerBalcony.position.set(0, 3.5, -0.25);
+        group.add(towerBalcony);
+
+        const beacon = new THREE.Mesh(new THREE.OctahedronGeometry(0.42, 0), materials.gold);
+        beacon.position.set(0, 4.05, -0.25);
+        group.add(beacon);
+        animatedProps.push({ mesh: beacon, baseY: 4.05, phase: 4.1, rotate: true });
+
+        const towerRoof = new THREE.Mesh(new THREE.ConeGeometry(0.58, 0.55, 8), materials.houseRoof);
+        towerRoof.position.set(0, 4.65, -0.25);
+        group.add(towerRoof);
+
+        const chest = createTreasureChest(false);
+        chest.position.set(0.95, 0.98, 0.5);
+        chest.rotation.y = -0.4;
+        group.add(chest);
+
+        const tree = createPalmTree(0.88);
+        tree.position.set(-1.15, 0.95, 0.35);
+        group.add(tree);
+
+        const lookout = createMiniCharacter(materials.pirateRed, false, false);
+        lookout.position.set(-0.45, 0.98, 0.88);
+        group.add(lookout);
+        animatedProps.push({ mesh: lookout, baseY: 0.98, phase: 1.1 });
+      }
+
+      enableShadowRecursive(group);
+      scene.add(group);
+    }
+
+    buildPirateIsland('haven', -4.5, 1.5, 3.5);
+    buildPirateIsland('vault', -19.5, -9.5, 3.2);
+    buildPirateIsland('log', 11.5, -10.5, 3.2);
+    buildPirateIsland('signal', 10.5, 11.5, 3.0);
+
+    // Decorative Sea Archipelagos, Buoys & Rocks
+    [
+      [-12, 8], [4, -15], [-14, -18], [18, 2], [-23, 4], [2, 16], [-8, -11], [19, -16]
+    ].forEach(([rx, rz], i) => {
+      const rockGroup = new THREE.Group();
+      rockGroup.position.set(rx, 0, rz);
+
+      const mainRock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.8 + (i % 3) * 0.35, 0), materials.rock);
+      mainRock.position.y = 0.25;
+      mainRock.rotation.set(i, i * 0.6, 0);
+      rockGroup.add(mainRock);
+
+      const subRock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.45 + (i % 2) * 0.2, 0), materials.rockDark);
+      subRock.position.set(0.65, 0.1, 0.35);
+      rockGroup.add(subRock);
+
+      enableShadowRecursive(rockGroup);
+      scene.add(rockGroup);
     });
+
+    // Soft Procedural Sky Clouds & Circling Sea Birds
+    function createCloudCluster(x, y, z, scale) {
+      const cGroup = new THREE.Group();
+      cGroup.position.set(x, y, z);
+      const puffs = [
+        [0, 0, 0, 1.3], [-1.1, -0.15, 0.2, 0.95], [1.15, -0.1, -0.15, 1.0], [0.3, 0.45, 0.25, 0.85]
+      ];
+      puffs.forEach(([px, py, pz, r]) => {
+        const m = new THREE.Mesh(new THREE.DodecahedronGeometry(r, 1), materials.cloud);
+        m.position.set(px, py, pz);
+        m.scale.y = 0.62;
+        cGroup.add(m);
+      });
+      cGroup.scale.setScalar(scale);
+      scene.add(cGroup);
+      skyClouds.push({ mesh: cGroup, baseX: x, speed: 0.25 + (scale * 0.1) });
+    }
+
+    [
+      [-28, 13, -24, 1.6], [22, 14, -26, 1.8], [-12, 15, -32, 1.4],
+      [30, 12, 8, 1.5], [-32, 13, 14, 1.7]
+    ].forEach(c => createCloudCluster(c[0], c[1], c[2], c[3]));
+
+    function createSeagull(centerX, centerZ, radius, speed, phase) {
+      const bird = new THREE.Group();
+      const wingGeo = new THREE.BoxGeometry(0.32, 0.03, 0.1);
+      const leftWing = new THREE.Mesh(wingGeo, materials.sailWhite);
+      leftWing.position.x = -0.15;
+      const rightWing = new THREE.Mesh(wingGeo, materials.sailWhite);
+      rightWing.position.x = 0.15;
+      bird.add(leftWing, rightWing);
+      scene.add(bird);
+      seaBirds.push({ group: bird, leftWing, rightWing, centerX, centerZ, radius, speed, phase });
+    }
+
+    createSeagull(-4.5, 1.5, 4.8, 0.85, 0);
+    createSeagull(-4.5, 1.5, 5.6, 0.75, 2.4);
+    createSeagull(-19.5, -9.5, 4.5, 0.9, 1.2);
+    createSeagull(11.5, -10.5, 4.5, 0.8, 3.7);
+
+    // ============================================================================
+    // CAPTAIN REZTROID'S DETAILED PIRATE GALLEON SHIP ("THE BLACK REVENGE")
+    // ============================================================================
+    const shipGroup = new THREE.Group();
+    shipGroup.position.set(-4.5, 0.15, 6.5);
+    shipGroup.rotation.y = -0.3;
+    scene.add(shipGroup);
+
+    const shipModel = new THREE.Group();
+    shipGroup.add(shipModel);
+
+    // 1. Stepped Multi-Layer Wooden Hull + Keel
+    const lowerHull = new THREE.Mesh(new THREE.BoxGeometry(1.32, 0.45, 3.1), materials.woodDark);
+    lowerHull.position.y = 0.26;
+    shipModel.add(lowerHull);
+
+    const upperHull = new THREE.Mesh(new THREE.BoxGeometry(1.56, 0.42, 3.45), materials.woodMid);
+    upperHull.position.y = 0.58;
+    shipModel.add(upperHull);
+
+    // Deck Floor Planks
+    const mainDeck = new THREE.Mesh(new THREE.BoxGeometry(1.46, 0.08, 3.3), materials.woodLight);
+    mainDeck.position.y = 0.8;
+    shipModel.add(mainDeck);
+
+    // Side Bulwark Railings
+    [-0.74, 0.74].forEach(rx => {
+      const rail = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.18, 3.2), materials.woodDark);
+      rail.position.set(rx, 0.88, 0);
+      shipModel.add(rail);
+    });
+
+    // Gold Trim Stripe Around Hull
+    const hullTrim = new THREE.Mesh(new THREE.BoxGeometry(1.62, 0.1, 3.5), materials.hullTrim);
+    hullTrim.position.y = 0.68;
+    shipModel.add(hullTrim);
+
+    // Tapered Front Bow Wedge + Golden Prow Figurehead + Bowsprit
+    const bowWedge = new THREE.Mesh(new THREE.ConeGeometry(0.95, 1.25, 4), materials.woodMid);
+    bowWedge.rotation.x = Math.PI / 2;
+    bowWedge.rotation.z = Math.PI / 4;
+    bowWedge.scale.set(0.82, 1, 0.48);
+    bowWedge.position.set(0, 0.58, 2.15);
+    shipModel.add(bowWedge);
+
+    const bowSprit = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.075, 1.75, 7), materials.woodDark);
+    bowSprit.rotation.x = Math.PI / 2.65;
+    bowSprit.position.set(0, 0.88, 2.38);
+    shipModel.add(bowSprit);
+
+    const figurehead = new THREE.Mesh(new THREE.OctahedronGeometry(0.18, 0), materials.gold);
+    figurehead.position.set(0, 0.68, 2.35);
+    shipModel.add(figurehead);
+
+    // Rear Rudder Blade
+    const rudder = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.65, 0.38), materials.woodDark);
+    rudder.position.set(0, 0.35, -1.82);
+    shipModel.add(rudder);
+
+    // 2. Captain's Stern Cabin + Windows + Quarterdeck Balustrade + Helm Wheel
+    const sternCabin = new THREE.Mesh(new THREE.BoxGeometry(1.44, 0.72, 1.18), materials.woodLight);
+    sternCabin.position.set(0, 1.05, -1.12);
+    shipModel.add(sternCabin);
+
+    const cabinRoof = new THREE.Mesh(new THREE.BoxGeometry(1.52, 0.1, 1.26), materials.woodDark);
+    cabinRoof.position.set(0, 1.42, -1.12);
+    shipModel.add(cabinRoof);
+
+    // Glowing Rear Cabin Windows
+    [-0.36, 0, 0.36].forEach(wx => {
+      const rearWin = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.24, 0.08), materials.windowGlow);
+      rearWin.position.set(wx, 1.08, -1.7);
+      shipModel.add(rearWin);
+    });
+
+    // Ornate Rear Brass Lantern
+    const sternLantern = new THREE.Mesh(new THREE.OctahedronGeometry(0.16, 0), materials.lanternGlow);
+    sternLantern.position.set(0, 1.62, -1.75);
+    shipModel.add(sternLantern);
+
+    // Ship's Helm / Steering Wheel on Quarterdeck
+    const helmStand = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 0.38, 6), materials.woodDark);
+    helmStand.position.set(0, 1.62, -0.62);
+    shipModel.add(helmStand);
+
+    const helmWheel = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.03, 6, 12), materials.gold);
+    helmWheel.position.set(0, 1.78, -0.58);
+    shipModel.add(helmWheel);
+
+    // 3. Masts, Crow's Nest, Cross-Yards & Billowing Sails
+    const mainMast = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.11, 3.6, 8), materials.woodLight);
+    mainMast.position.set(0, 2.15, 0.12);
+    shipModel.add(mainMast);
+
+    // Crow's Nest Lookout Basket + Top Pennant Flag
+    const crowsNest = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.18, 0.26, 9), materials.woodDark);
+    crowsNest.position.set(0, 3.45, 0.12);
+    shipModel.add(crowsNest);
+
+    const topPennant = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.55, 4), materials.pirateRed);
+    topPennant.rotation.z = Math.PI / 2;
+    topPennant.position.set(-0.26, 3.92, 0.12);
+    shipModel.add(topPennant);
+
+    // Horizontal Wooden Yardarms
+    const mainYardTop = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.1, 7), materials.woodDark);
+    mainYardTop.rotation.z = Math.PI / 2;
+    mainYardTop.position.set(0, 2.92, 0.2);
+    shipModel.add(mainYardTop);
+
+    const mainYardBot = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.0, 7), materials.woodDark);
+    mainYardBot.rotation.z = Math.PI / 2;
+    mainYardBot.position.set(0, 1.5, 0.2);
+    shipModel.add(mainYardBot);
+
+    const foreMast = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.08, 2.55, 8), materials.woodLight);
+    foreMast.position.set(0, 1.65, 1.25);
+    shipModel.add(foreMast);
+
+    const foreYardTop = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 1.45, 6), materials.woodDark);
+    foreYardTop.rotation.z = Math.PI / 2;
+    foreYardTop.position.set(0, 2.22, 1.32);
+    shipModel.add(foreYardTop);
+
+    // Curved Billowing Sails (Wind-filled curve)
+    function createCurvedSailGeo(w, h, curveDepth) {
+      const geo = new THREE.PlaneGeometry(w, h, 12, 8);
+      const pos = geo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const nx = pos.getX(i) / (w / 2);
+        const ny = pos.getY(i) / (h / 2);
+        const bulge = Math.cos(nx * Math.PI * 0.45) * Math.cos(ny * Math.PI * 0.45) * curveDepth;
+        pos.setZ(i, bulge);
+      }
+      geo.computeVertexNormals();
+      return geo;
+    }
+
+    const mainSail = new THREE.Mesh(createCurvedSailGeo(1.92, 1.42, 0.22), materials.sailJollyRoger);
+    mainSail.position.set(0, 2.21, 0.22);
+    shipModel.add(mainSail);
+
+    const foreSail = new THREE.Mesh(createCurvedSailGeo(1.32, 0.98, 0.16), materials.sailWhite);
+    foreSail.position.set(0, 1.72, 1.34);
+    shipModel.add(foreSail);
+
+    // Rope Rigging Lines
+    const riggingPoints = [
+      new THREE.Vector3(0, 3.5, 0.12), new THREE.Vector3(0, 1.15, 2.85),
+      new THREE.Vector3(0, 3.5, 0.12), new THREE.Vector3(-0.72, 0.9, 0.12),
+      new THREE.Vector3(0, 3.5, 0.12), new THREE.Vector3(0.72, 0.9, 0.12),
+      new THREE.Vector3(0, 3.5, 0.12), new THREE.Vector3(0, 1.45, -1.65)
+    ];
+    const rigGeo = new THREE.BufferGeometry().setFromPoints(riggingPoints);
+    const riggingLines = new THREE.LineSegments(rigGeo, materials.rope);
+    shipModel.add(riggingLines);
+
+    // 4. 6 Golden Broadside Cannons + Iron Mounts + Bow Anchors
+    [-0.82, 0.82].forEach(sideX => {
+      [-0.45, 0.18, 0.82].forEach(cz => {
+        const cannon = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.085, 0.42, 8), materials.gold);
+        cannon.rotation.z = Math.PI / 2;
+        cannon.position.set(sideX, 0.56, cz);
+        shipModel.add(cannon);
+      });
+
+      // Bow Anchor
+      const anchor = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.03, 5, 8, Math.PI), materials.iron);
+      anchor.position.set(sideX * 0.95, 0.55, 1.55);
+      anchor.rotation.y = Math.PI / 2;
+      shipModel.add(anchor);
+    });
+
+    // 5. Captain Reztroid & Crew on Deck
+    const captainChar = createMiniCharacter(materials.pirateRed, true, true);
+    captainChar.position.set(0, 1.44, -0.92);
+    shipModel.add(captainChar);
+
+    const mateChar = createMiniCharacter(materials.pirateBlue, false, false);
+    mateChar.position.set(0.36, 0.82, 0.55);
+    shipModel.add(mateChar);
+
+    enableShadowRecursive(shipModel);
+
+    // Warm Deck Lantern Light
+    const shipLight = new THREE.PointLight(0xffb74d, 1.35, 9.5);
+    shipLight.position.set(0, 1.75, -0.8);
+    shipModel.add(shipLight);
+
+    // ============================================================================
+    // SMOOTH NAVIGATION, AUTOPILOT, WAKE TRAIL & CANNON FX
+    // ============================================================================
+    const shipState = {
+      targetX: -4.5,
+      targetZ: 6.5,
+      targetRot: null,
+      hasTarget: false,
+      vx: 0,
+      vz: 0,
+      rotVel: 0
+    };
+
+    const keysPressed = {};
+    window.addEventListener('keydown', (e) => {
+      keysPressed[e.code] = true;
+      if (e.code === 'Space' && document.activeElement === document.body) {
+        e.preventDefault();
+        fireBroadsideCannons();
+      }
+    });
+    window.addEventListener('keyup', (e) => {
+      keysPressed[e.code] = false;
+    });
+
+    let activeIslandId = 'haven';
+    let cameraFollowShip = true;
+
+    const camSpherical = {
+      theta: 0.25,
+      phi: isMobileScreen ? 1.05 : 1.15,
+      radius: isMobileScreen ? 25.0 : 16.5
+    };
+    const camLookTarget = new THREE.Vector3(-4.5, 1.1, 4.0);
+
+    function updateActiveNavUI(islandId, customLabel) {
+      activeIslandId = islandId;
+      document.getElementById('active-island-name').textContent = customLabel || PIRATE_ISLANDS[islandId].name;
+      document.querySelectorAll('[data-nav]').forEach(btn => {
+        if (btn.getAttribute('data-nav') === islandId) {
+          btn.classList.add('pill-dark');
+        } else {
+          btn.classList.remove('pill-dark');
+        }
+      });
+    }
+
+    function showPreviewCard(islandId) {
+      const data = PIRATE_ISLANDS[islandId];
+      if (!data) return;
+      document.getElementById('preview-icon').textContent = data.icon;
+      document.getElementById('preview-badge').textContent = data.badge;
+      document.getElementById('preview-title').textContent = data.shortTitle;
+      document.getElementById('preview-desc').textContent = data.shortDesc;
+      document.getElementById('preview-link-label').textContent = data.linkLabel;
+      document.getElementById('preview-external-link').href = data.externalUrl;
+
+      const hlContainer = document.getElementById('preview-highlights');
+      hlContainer.innerHTML = data.highlights
+        .map(h => `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-stone-500/15">${h}</span>`)
+        .join('');
+
+      const card = document.getElementById('island-preview-card');
+      card.classList.remove('opacity-0', 'translate-y-4');
+      card.classList.add('opacity-100', 'translate-y-0');
+    }
+
+    function hidePreviewCard() {
+      const card = document.getElementById('island-preview-card');
+      card.classList.remove('opacity-100', 'translate-y-0');
+      card.classList.add('opacity-0', 'translate-y-4');
+    }
+
+    function sailToIsland(islandId, showCard = true) {
+      ensureFirstInteractionAudio();
+      const dock = islandDockTargets[islandId];
+      if (!dock) return;
+
+      shipState.targetX = dock.x;
+      shipState.targetZ = dock.z;
+      shipState.targetRot = dock.rot;
+      shipState.hasTarget = true;
+
+      updateActiveNavUI(islandId, PIRATE_ISLANDS[islandId].name);
+      document.getElementById('ship-status-text').textContent = `Berlayar menuju ${PIRATE_ISLANDS[islandId].name}...`;
+
+      if (showCard) {
+        showPreviewCard(islandId);
+      }
+      playCannonSound(true);
+    }
+
+    function spawnWaterRipple(x, z, maxScale = 4.5) {
+      const ringGeo = new THREE.RingGeometry(0.18, 0.32, 22);
+      ringGeo.rotateX(-Math.PI / 2);
+      const ringMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.position.set(x, 0.12, z);
+      scene.add(ring);
+
+      gsap.to(ring.scale, { x: maxScale, y: maxScale, z: maxScale, duration: 0.9, ease: 'power2.out' });
+      gsap.to(ringMat, {
+        opacity: 0,
+        duration: 0.9,
+        onComplete: () => {
+          scene.remove(ring);
+          ringGeo.dispose();
+          ringMat.dispose();
+        }
+      });
+    }
+
+    let lastWakeTime = 0;
+    function spawnWakeFoam(x, z, time) {
+      if (time - lastWakeTime < 0.14) return;
+      lastWakeTime = time;
+      const wakeGeo = new THREE.CircleGeometry(0.28, 8);
+      wakeGeo.rotateX(-Math.PI / 2);
+      const wakeMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.45 });
+      const wake = new THREE.Mesh(wakeGeo, wakeMat);
+      const sternOffset = new THREE.Vector3(0, 0, -1.65).applyAxisAngle(new THREE.Vector3(0, 1, 0), shipGroup.rotation.y);
+      wake.position.set(x + sternOffset.x, 0.08, z + sternOffset.z);
+      scene.add(wake);
+
+      gsap.to(wake.scale, { x: 2.8, y: 2.8, z: 2.8, duration: 0.85, ease: 'power1.out' });
+      gsap.to(wakeMat, {
+        opacity: 0,
+        duration: 0.85,
+        onComplete: () => {
+          scene.remove(wake);
+          wakeGeo.dispose();
+          wakeMat.dispose();
+        }
+      });
+    }
+
+    function fireBroadsideCannons() {
+      ensureFirstInteractionAudio();
+      playCannonSound(false);
+
+      // Gentle deck recoil without sinking ship
+      gsap.fromTo(shipModel.rotation, { z: 0.14 }, { z: 0, duration: 0.45, ease: 'elastic.out(1, 0.4)' });
+
+      [-1, 1].forEach(side => {
+        const localOffset = new THREE.Vector3(side * 0.95, 0.56, 0.18);
+        localOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), shipGroup.rotation.y);
+        const worldPos = shipGroup.position.clone().add(localOffset);
+
+        const puffGeo = new THREE.SphereGeometry(0.28, 8, 8);
+        const puffMat = new THREE.MeshBasicMaterial({ color: 0xfef3c7, transparent: true, opacity: 0.9 });
+        const puff = new THREE.Mesh(puffGeo, puffMat);
+        puff.position.copy(worldPos);
+        scene.add(puff);
+
+        const dirX = Math.cos(shipGroup.rotation.y) * side * 2.5;
+        const dirZ = -Math.sin(shipGroup.rotation.y) * side * 2.5;
+
+        gsap.to(puff.position, {
+          x: worldPos.x + dirX,
+          y: worldPos.y + 0.42,
+          z: worldPos.z + dirZ,
+          duration: 0.55,
+          ease: 'power2.out'
+        });
+        gsap.to(puff.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.55 });
+        gsap.to(puffMat, {
+          opacity: 0,
+          duration: 0.55,
+          onComplete: () => {
+            scene.remove(puff);
+            puffGeo.dispose();
+            puffMat.dispose();
+          }
+        });
+      });
+    }
+
+    // ============================================================================
+    // CAMERA ORBIT & RAYCAST INTERACTION
+    // ============================================================================
+    let isDragging = false;
+    let prevPointer = { x: 0, y: 0 };
+    let pointerDownPos = { x: 0, y: 0 };
+    const raycaster = new THREE.Raycaster();
+    const mouseVec = new THREE.Vector2();
+
+    canvas.addEventListener('pointerdown', (e) => {
+      ensureFirstInteractionAudio();
+      isDragging = true;
+      prevPointer.x = e.clientX;
+      prevPointer.y = e.clientY;
+      pointerDownPos.x = e.clientX;
+      pointerDownPos.y = e.clientY;
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - prevPointer.x;
+      const dy = e.clientY - prevPointer.y;
+      prevPointer.x = e.clientX;
+      prevPointer.y = e.clientY;
+
+      camSpherical.theta -= dx * 0.0065;
+      camSpherical.phi = Math.max(0.45, Math.min(1.38, camSpherical.phi - dy * 0.0055));
+    });
+
+    window.addEventListener('pointerup', () => {
+      isDragging = false;
+    });
+
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      camSpherical.radius = Math.max(9, Math.min(36, camSpherical.radius + e.deltaY * 0.015));
+    }, { passive: false });
+
+    canvas.addEventListener('pointerup', (e) => {
+      const moveDist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+      if (moveDist < 8 && e.button === 0) {
+        const { width, height } = getViewportDimensions();
+        mouseVec.x = (e.clientX / width) * 2 - 1;
+        mouseVec.y = -(e.clientY / height) * 2 + 1;
+        raycaster.setFromCamera(mouseVec, camera);
+
+        const islandHits = raycaster.intersectObjects(clickableIslandObjects, false);
+        if (islandHits.length > 0) {
+          const hitIslandId = islandHits[0].object.userData.islandId;
+          if (hitIslandId) {
+            sailToIsland(hitIslandId, true);
+            return;
+          }
+        }
+
+        const waterHits = raycaster.intersectObject(waterMesh);
+        if (waterHits.length > 0) {
+          const pt = waterHits[0].point;
+          shipState.targetX = THREE.MathUtils.clamp(pt.x, -45, 45);
+          shipState.targetZ = THREE.MathUtils.clamp(pt.z, -45, 45);
+          shipState.targetRot = null;
+          shipState.hasTarget = true;
+          spawnWaterRipple(shipState.targetX, shipState.targetZ);
+          document.getElementById('ship-status-text').textContent = 'Berlayar menuju koordinat laut...';
+        }
+      }
+    });
+
+    // ============================================================================
+    // UI MODALS, THEME TOGGLE & SCREEN PINS
+    // ============================================================================
+    const pinElements = {
+      haven: document.getElementById('pin-haven'),
+      vault: document.getElementById('pin-vault'),
+      log: document.getElementById('pin-log'),
+      signal: document.getElementById('pin-signal')
+    };
 
     function updatePins() {
-      const widthHalf = window.innerWidth / 2;
-      const heightHalf = window.innerHeight / 2;
+      const { width, height } = getViewportDimensions();
+      const widthHalf = width / 2;
+      const heightHalf = height / 2;
 
       Object.keys(islandPositions3D).forEach((key) => {
         const pin = pinElements[key];
@@ -1268,8 +1774,12 @@
           return;
         }
 
-        const x = pos.x * widthHalf + widthHalf;
-        const y = -(pos.y * heightHalf) + heightHalf;
+        const rawX = pos.x * widthHalf + widthHalf;
+        const rawY = -(pos.y * heightHalf) + heightHalf;
+        const padX = width < 768 ? 48 : 64;
+        const padY = width < 768 ? 58 : 52;
+        const x = Math.max(padX, Math.min(width - padX, rawX));
+        const y = Math.max(padY, Math.min(height - padY, rawY));
 
         pin.style.left = `${x}px`;
         pin.style.top = `${y}px`;
@@ -1277,714 +1787,309 @@
         pin.style.pointerEvents = 'auto';
 
         if (key === activeIslandId) {
-          pin.classList.add('ring-2', 'ring-amber-600/50');
+          pin.classList.add('ring-2', 'ring-amber-500/60');
         } else {
-          pin.classList.remove('ring-2', 'ring-amber-600/50');
+          pin.classList.remove('ring-2', 'ring-amber-500/60');
         }
       });
-    }
-
-    const shipStatusText = document.getElementById('ship-status-text');
-    const previewCard = document.getElementById('island-preview-card');
-
-    const shipPhysics = {
-      mode: 'autopilot',
-      targetPos: new THREE.Vector3(
-        PIRATE_ISLANDS.haven.dockPosition.x,
-        PIRATE_ISLANDS.haven.dockPosition.y,
-        PIRATE_ISLANDS.haven.dockPosition.z
-      ),
-      targetYaw: PIRATE_ISLANDS.haven.dockRotationY,
-      hasFinalDockYaw: true,
-      currentSpeed: 0,
-      yawVelocity: 0,
-      bankAngle: 0,
-      pitchAngle: 0,
-      cameraFollow: true,
-      boostActive: false,
-      keys: { w: false, a: false, s: false, d: false }
-    };
-
-    function shortestAngleDiff(current, target) {
-      let diff = (target - current + Math.PI) % (Math.PI * 2) - Math.PI;
-      if (diff < -Math.PI) diff += Math.PI * 2;
-      return diff;
-    }
-
-    function showPreviewCard(islandId) {
-      const cfg = PIRATE_ISLANDS[islandId];
-      if (!cfg) return;
-
-      document.getElementById('preview-icon').innerText = cfg.icon;
-      document.getElementById('preview-badge').innerText = cfg.badge;
-      document.getElementById('preview-title').innerText = cfg.name;
-      document.getElementById('preview-desc').innerText = cfg.shortDesc;
-
-      const highlightsContainer = document.getElementById('preview-highlights');
-      highlightsContainer.innerHTML = cfg.highlights
-        .map(h => `<span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-stone-200/80 text-stone-800">${h}</span>`)
-        .join('');
-
-      const extLink = document.getElementById('preview-external-link');
-      extLink.href = cfg.linkUrl;
-      document.getElementById('preview-link-label').innerText = cfg.linkLabel;
-
-      previewCard.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
-      previewCard.classList.add('opacity-100', 'translate-y-0');
-      lucide.createIcons();
-    }
-
-    function hidePreviewCard() {
-      previewCard.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
-      previewCard.classList.remove('opacity-100', 'translate-y-0');
-    }
-
-    function sailToIsland(islandId, openPreview = true) {
-      const dest = PIRATE_ISLANDS[islandId];
-      if (!dest) return;
-
-      activeIslandId = islandId;
-      updateActiveNavUI(islandId, dest.name);
-
-      shipPhysics.mode = 'autopilot';
-      shipPhysics.targetPos.set(dest.dockPosition.x, dest.dockPosition.y, dest.dockPosition.z);
-      shipPhysics.targetYaw = dest.dockRotationY;
-      shipPhysics.hasFinalDockYaw = true;
-
-      targetMarkerGroup.position.set(dest.dockPosition.x, 0.08, dest.dockPosition.z);
-      ringMat.opacity = 0.75;
-
-      shipStatusText.innerText = `Berlayar menuju ${dest.name}...`;
-      playCleanChime(520);
-
-      if (openPreview) {
-        showPreviewCard(islandId);
-      }
-    }
-
-    function sailToSeaPoint(point3D) {
-      for (const k of Object.keys(PIRATE_ISLANDS)) {
-        const isl = PIRATE_ISLANDS[k];
-        const distToIslandCenter = Math.hypot(point3D.x - isl.position.x, point3D.z - isl.position.z);
-        if (distToIslandCenter < 4.5) {
-          sailToIsland(k, true);
-          return;
-        }
-      }
-
-      hidePreviewCard();
-      shipPhysics.mode = 'autopilot';
-      shipPhysics.targetPos.set(point3D.x, 0.32, point3D.z);
-      shipPhysics.hasFinalDockYaw = false;
-
-      targetMarkerGroup.position.set(point3D.x, 0.08, point3D.z);
-      ringMat.opacity = 0.85;
-
-      shipStatusText.innerText = `Berlayar ke titik (${Math.round(point3D.x)}, ${Math.round(point3D.z)})`;
-      playCleanChime(580);
-    }
-
-    function updateActiveNavUI(islandId, labelName) {
-      document.getElementById('active-island-name').innerText = labelName;
-      document.querySelectorAll('[data-nav]').forEach(btn => {
-        if (btn.getAttribute('data-nav') === islandId) {
-          btn.classList.add('bg-stone-900', 'text-white');
-        } else {
-          btn.classList.remove('bg-stone-900', 'text-white');
-        }
-      });
-    }
-
-    function toggleCameraFollow() {
-      shipPhysics.cameraFollow = !shipPhysics.cameraFollow;
-      const dot = document.getElementById('cam-mode-dot');
-      const txt = document.getElementById('cam-mode-text');
-      if (shipPhysics.cameraFollow) {
-        dot.className = 'w-2 h-2 rounded-full bg-emerald-600 shrink-0';
-        txt.innerText = 'Follow Ship';
-      } else {
-        dot.className = 'w-2 h-2 rounded-full bg-stone-400 shrink-0';
-        txt.innerText = 'Free Camera';
-      }
-      playCleanChime(480);
-    }
-
-    const raycaster = new THREE.Raycaster();
-    const mouseVec = new THREE.Vector2();
-    let pointerDownPos = { x: 0, y: 0 };
-
-    canvas.addEventListener('pointerdown', (e) => {
-      pointerDownPos.x = e.clientX;
-      pointerDownPos.y = e.clientY;
-      tryAutoStartBGM();
-    });
-
-    canvas.addEventListener('pointerup', (e) => {
-      const moveDist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
-      if (moveDist < 8 && e.button === 0) {
-        mouseVec.x = (e.clientX / window.innerWidth) * 2 - 1;
-        mouseVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
-        raycaster.setFromCamera(mouseVec, camera);
-
-        const islandHits = raycaster.intersectObjects(clickableIslandObjects, false);
-        if (islandHits.length > 0 && islandHits[0].object.userData.islandId) {
-          sailToIsland(islandHits[0].object.userData.islandId, true);
-          return;
-        }
-
-        const seaHits = raycaster.intersectObject(oceanMesh);
-        if (seaHits.length > 0) {
-          sailToSeaPoint(seaHits[0].point);
-        }
-      }
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
-      const k = e.key.toLowerCase();
-      if (k === 'w' || e.key === 'ArrowUp') { shipPhysics.keys.w = true; shipPhysics.mode = 'manual'; hidePreviewCard(); }
-      if (k === 's' || e.key === 'ArrowDown') { shipPhysics.keys.s = true; shipPhysics.mode = 'manual'; hidePreviewCard(); }
-      if (k === 'a' || e.key === 'ArrowLeft') { shipPhysics.keys.a = true; shipPhysics.mode = 'manual'; }
-      if (k === 'd' || e.key === 'ArrowRight') { shipPhysics.keys.d = true; shipPhysics.mode = 'manual'; }
-      if (e.key === 'Shift') shipPhysics.boostActive = true;
-      if (e.key === ' ') { e.preventDefault(); fireBroadsideCannons(); }
-      if (e.key === 'Escape') { closeModal(); hidePreviewCard(); }
-      if (e.key === '1') sailToIsland('haven', true);
-      if (e.key === '2') sailToIsland('vault', true);
-      if (e.key === '3') sailToIsland('log', true);
-      if (e.key === '4') sailToIsland('signal', true);
-    });
-
-    window.addEventListener('keyup', (e) => {
-      const k = e.key.toLowerCase();
-      if (k === 'w' || e.key === 'ArrowUp') shipPhysics.keys.w = false;
-      if (k === 's' || e.key === 'ArrowDown') shipPhysics.keys.s = false;
-      if (k === 'a' || e.key === 'ArrowLeft') shipPhysics.keys.a = false;
-      if (k === 'd' || e.key === 'ArrowRight') shipPhysics.keys.d = false;
-      if (e.key === 'Shift') shipPhysics.boostActive = false;
-    });
-
-    const modalEl = document.getElementById('content-modal');
-    const modalContainer = document.getElementById('modal-container');
-    const modalTitle = document.getElementById('modal-title');
-    const modalSubtitle = document.getElementById('modal-subtitle');
-    const modalBody = document.getElementById('modal-body');
-    const modalIconContainer = document.getElementById('modal-icon-container');
-    const modalExtBtn = document.getElementById('modal-external-btn');
-    const modalExtText = document.getElementById('modal-external-text');
-
-    function openModal(islandId) {
-      const cfg = PIRATE_ISLANDS[islandId];
-      if (!cfg) return;
-
-      modalIconContainer.innerText = cfg.icon;
-      modalTitle.innerText = cfg.name;
-      modalSubtitle.innerText = cfg.subtitle;
-      modalBody.innerHTML = cfg.content;
-      modalExtBtn.href = cfg.linkUrl;
-      modalExtText.innerText = cfg.linkLabel;
-
-      modalEl.classList.remove('opacity-0', 'pointer-events-none');
-      modalEl.classList.add('opacity-100', 'pointer-events-auto');
-      modalContainer.classList.remove('translate-y-6', 'sm:scale-95');
-      modalContainer.classList.add('translate-y-0', 'sm:scale-100');
-
-      playCleanChime(440);
-      lucide.createIcons();
     }
 
     function openCurrentIslandModal() {
-      openModal(activeIslandId);
+      const data = PIRATE_ISLANDS[activeIslandId];
+      if (!data) return;
+      document.getElementById('modal-tag').textContent = data.badge;
+      document.getElementById('modal-body').innerHTML = data.html;
+
+      const modal = document.getElementById('island-modal');
+      const panel = document.getElementById('island-modal-panel');
+      modal.classList.remove('pointer-events-none', 'opacity-0');
+      modal.classList.add('pointer-events-auto', 'opacity-100');
+      panel.classList.remove('translate-y-8');
+      panel.classList.add('translate-y-0');
+      lucide.createIcons();
     }
 
-    function closeModal() {
-      modalEl.classList.add('opacity-0', 'pointer-events-none');
-      modalEl.classList.remove('opacity-100', 'pointer-events-auto');
-      modalContainer.classList.add('translate-y-6', 'sm:scale-95');
-      modalContainer.classList.remove('translate-y-0', 'sm:scale-100');
+    function closeIslandModal() {
+      const modal = document.getElementById('island-modal');
+      const panel = document.getElementById('island-modal-panel');
+      modal.classList.add('pointer-events-none', 'opacity-0');
+      modal.classList.remove('pointer-events-auto', 'opacity-100');
+      panel.classList.add('translate-y-8');
+      panel.classList.remove('translate-y-0');
     }
-
-    modalEl.addEventListener('click', (e) => {
-      if (e.target === modalEl) closeModal();
-    });
 
     function toggleHelpModal() {
-      const hModal = document.getElementById('help-modal');
-      const isOpen = hModal.classList.contains('opacity-100');
-      if (isOpen) {
-        hModal.classList.add('opacity-0', 'pointer-events-none');
-        hModal.classList.remove('opacity-100', 'pointer-events-auto');
+      const modal = document.getElementById('help-modal');
+      const isHidden = modal.classList.contains('opacity-0');
+      if (isHidden) {
+        modal.classList.remove('pointer-events-none', 'opacity-0');
+        modal.classList.add('pointer-events-auto', 'opacity-100');
       } else {
-        hModal.classList.remove('opacity-0', 'pointer-events-none');
-        hModal.classList.add('opacity-100', 'pointer-events-auto');
+        modal.classList.add('pointer-events-none', 'opacity-0');
+        modal.classList.remove('pointer-events-auto', 'opacity-100');
       }
     }
 
-    function handleFormSubmit(btn) {
-      const nameVal = document.getElementById('contact-name')?.value || 'Pelanggan';
-      const msgVal = document.getElementById('contact-msg')?.value || 'Halo Captain Reztroid!';
-      btn.innerHTML = `<span>Pesan Terkirim ke Captain Reztroid ✓</span>`;
-      btn.classList.replace('bg-stone-900', 'bg-emerald-700');
-      fireBroadsideCannons();
-
-      const waBase = REZTROID_CONFIG.links.signal;
-      if (waBase.includes('wa.me')) {
-        const textParam = encodeURIComponent(`Halo Captain Reztroid! Saya ${nameVal}. ${msgVal}`);
-        window.open(`${waBase}?text=${textParam}`, '_blank');
+    function toggleCameraFollow() {
+      cameraFollowShip = !cameraFollowShip;
+      const dot = document.getElementById('cam-mode-dot');
+      const txt = document.getElementById('cam-mode-text');
+      if (cameraFollowShip) {
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-600 shrink-0';
+        txt.textContent = 'Follow Ship';
+      } else {
+        dot.className = 'w-2 h-2 rounded-full bg-amber-600 shrink-0';
+        txt.textContent = 'Free Look';
       }
-
-      setTimeout(() => {
-        closeModal();
-      }, 1200);
     }
 
     function toggleSkyTheme() {
       isNightMode = !isNightMode;
-      const themeIcon = document.getElementById('theme-icon');
-      const palette = isNightMode ? PALETTES.night : PALETTES.sunset;
+      document.body.classList.toggle('night-mode', isNightMode);
+      const target = isNightMode ? THEMES.night : THEMES.day;
 
-      if (isNightMode) {
-        themeIcon.setAttribute('data-lucide', 'sun');
-        document.body.classList.add('night-mode');
-      } else {
-        themeIcon.setAttribute('data-lucide', 'moon');
-        document.body.classList.remove('night-mode');
-      }
+      gsap.to(scene.background, { r: target.skyHorizon.r, g: target.skyHorizon.g, b: target.skyHorizon.b, duration: 1.0 });
+      gsap.to(scene.fog.color, { r: target.fog.r, g: target.fog.g, b: target.fog.b, duration: 1.0 });
+      gsap.to(waterMat.color, { r: target.waterColor.r, g: target.waterColor.g, b: target.waterColor.b, duration: 1.0 });
+      gsap.to(ambientLight.color, { r: target.ambientColor.r, g: target.ambientColor.g, b: target.ambientColor.b, duration: 1.0 });
+      gsap.to(sunLight.color, { r: target.sunColor.r, g: target.sunColor.g, b: target.sunColor.b, duration: 1.0 });
+
+      const icon = document.getElementById('theme-icon');
+      icon.setAttribute('data-lucide', isNightMode ? 'sun' : 'moon');
       lucide.createIcons();
-
-      gsap.to(scene.background, {
-        r: new THREE.Color(palette.bg).r,
-        g: new THREE.Color(palette.bg).g,
-        b: new THREE.Color(palette.bg).b,
-        duration: 1.2
-      });
-      gsap.to(scene.fog.color, {
-        r: new THREE.Color(palette.fog).r,
-        g: new THREE.Color(palette.fog).g,
-        b: new THREE.Color(palette.fog).b,
-        duration: 1.2
-      });
-      gsap.to(oceanMat.color, {
-        r: new THREE.Color(palette.seaColor).r,
-        g: new THREE.Color(palette.seaColor).g,
-        b: new THREE.Color(palette.seaColor).b,
-        duration: 1.2
-      });
-      gsap.to(oceanMat.emissive, {
-        r: new THREE.Color(palette.seaEmissive).r,
-        g: new THREE.Color(palette.seaEmissive).g,
-        b: new THREE.Color(palette.seaEmissive).b,
-        duration: 1.2
-      });
-      gsap.to(hemiLight.color, {
-        r: new THREE.Color(palette.hemiSky).r,
-        g: new THREE.Color(palette.hemiSky).g,
-        b: new THREE.Color(palette.hemiSky).b,
-        duration: 1.2
-      });
-      gsap.to(dirLight, {
-        intensity: palette.dirIntensity,
-        duration: 1.2
-      });
-
-      playCleanChime(isNightMode ? 340 : 540);
     }
+
+    // ============================================================================
+    // CLEAN WEB AUDIO API SEA SHANTY BGM & SOUND FX
+    // ============================================================================
+    let audioCtx = null;
+    let isPlayingBGM = false;
+    let shantyTimer = null;
+    let hasAutoStartedBGM = false;
 
     const SHANTY_NOTES = [
-      { f: 440.00, b: 146.83, d: 0.28 },
-      { f: 440.00, b: 0,      d: 0.14 },
-      { f: 440.00, b: 0,      d: 0.14 },
-      { f: 440.00, b: 220.00, d: 0.28 },
-      { f: 440.00, b: 0,      d: 0.14 },
-      { f: 440.00, b: 0,      d: 0.14 },
-      { f: 440.00, b: 146.83, d: 0.28 },
-      { f: 293.66, b: 0,      d: 0.28 },
-      { f: 349.23, b: 220.00, d: 0.28 },
-      { f: 440.00, b: 0,      d: 0.28 },
-      { f: 392.00, b: 130.81, d: 0.28 },
-      { f: 392.00, b: 0,      d: 0.14 },
-      { f: 392.00, b: 0,      d: 0.14 },
-      { f: 392.00, b: 196.00, d: 0.28 },
-      { f: 392.00, b: 0,      d: 0.14 },
-      { f: 392.00, b: 0,      d: 0.14 },
-      { f: 392.00, b: 130.81, d: 0.28 },
-      { f: 261.63, b: 0,      d: 0.28 },
-      { f: 329.63, b: 196.00, d: 0.28 },
-      { f: 392.00, b: 0,      d: 0.28 },
-      { f: 440.00, b: 146.83, d: 0.28 },
-      { f: 440.00, b: 0,      d: 0.14 },
-      { f: 440.00, b: 0,      d: 0.14 },
-      { f: 440.00, b: 220.00, d: 0.28 },
-      { f: 523.25, b: 0,      d: 0.28 },
-      { f: 587.33, b: 174.61, d: 0.28 },
-      { f: 523.25, b: 0,      d: 0.28 },
-      { f: 440.00, b: 196.00, d: 0.28 },
-      { f: 392.00, b: 0,      d: 0.28 },
-      { f: 349.23, b: 146.83, d: 0.38 },
-      { f: 329.63, b: 130.81, d: 0.38 },
-      { f: 293.66, b: 146.83, d: 0.70 },
-      { f: 0,      b: 0,      d: 0.35 }
+      293.66, 349.23, 392.00, 440.00, 392.00, 349.23, 329.63, 293.66,
+      293.66, 440.00, 523.25, 440.00, 392.00, 349.23, 329.63, 293.66
     ];
+    let shantyIndex = 0;
 
-    let shantyStepIndex = 0;
-
-    function initAudio() {
-      if (audioCtx) return;
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioContext();
-
-      const bufferSize = audioCtx.sampleRate * 2;
-      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-      const output = noiseBuffer.getChannelData(0);
-      let b0 = 0, b1 = 0, b2 = 0;
-      for (let i = 0; i < bufferSize; i++) {
-        const white = Math.random() * 2 - 1;
-        b0 = 0.998 * b0 + white * 0.055;
-        b1 = 0.992 * b1 + white * 0.075;
-        b2 = 0.968 * b2 + white * 0.153;
-        output[i] = (b0 + b1 + b2) * 0.05;
+    function initAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
       }
-
-      const windNode = audioCtx.createBufferSource();
-      windNode.buffer = noiseBuffer;
-      windNode.loop = true;
-
-      const filter = audioCtx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.value = 280;
-
-      ambientGain = audioCtx.createGain();
-      ambientGain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-
-      windNode.connect(filter);
-      filter.connect(ambientGain);
-      ambientGain.connect(audioCtx.destination);
-      windNode.start();
-
-      if (REZTROID_CONFIG.customMp3Url) {
-        customAudioEl = new Audio(REZTROID_CONFIG.customMp3Url);
-        customAudioEl.loop = true;
-        customAudioEl.volume = 0.5;
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
       }
     }
 
-    function playPluckedNote(freq, duration, isBass = false) {
-      if (!audioCtx || !isAudioPlaying || freq <= 0) return;
-      try {
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+    function playNextShantyNote() {
+      if (!isPlayingBGM || !audioCtx) return;
+      const now = audioCtx.currentTime;
+      const freq = SHANTY_NOTES[shantyIndex % SHANTY_NOTES.length];
+      shantyIndex++;
 
-        activeSynthOscs.add(osc);
-        osc.onended = () => activeSynthOscs.delete(osc);
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now);
 
-        osc.type = isBass ? 'triangle' : 'sine';
-        osc.frequency.setValueAtTime(freq, now);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(0.045, now + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
 
-        const peakGain = isBass ? 0.04 : 0.025;
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.linearRampToValueAtTime(peakGain, now + 0.03);
-        gain.gain.exponentialRampToValueAtTime(0.00001, now + duration);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start(now);
-        osc.stop(now + duration + 0.05);
-      } catch (e) {}
-    }
-
-    function scheduleNextShantyNote() {
-      if (!isAudioPlaying || REZTROID_CONFIG.customMp3Url) return;
-      const note = SHANTY_NOTES[shantyStepIndex];
-      shantyStepIndex = (shantyStepIndex + 1) % SHANTY_NOTES.length;
-
-      if (note.f > 0) playPluckedNote(note.f, note.d * 0.9, false);
-      if (note.b > 0) playPluckedNote(note.b, note.d * 1.2, true);
-
-      shantyTimeout = setTimeout(scheduleNextShantyNote, note.d * 1000);
-    }
-
-    function updateAudioUI() {
-      const label = document.getElementById('audio-label');
-      const eq = document.getElementById('bgm-eq');
-      if (isAudioPlaying) {
-        label.innerText = 'BGM On';
-        eq.classList.add('bgm-playing');
-      } else {
-        label.innerText = 'Play BGM';
-        eq.classList.remove('bgm-playing');
-      }
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.38);
     }
 
     function toggleAudio() {
-      initAudio();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
+      initAudioContext();
+      isPlayingBGM = !isPlayingBGM;
+      const eq = document.getElementById('bgm-eq');
+      const label = document.getElementById('audio-label');
 
-      isAudioPlaying = !isAudioPlaying;
-      hasAutoStartedBGM = true;
-
-      if (isAudioPlaying) {
-        ambientGain.gain.setTargetAtTime(0.22, audioCtx.currentTime, 0.8);
-        if (customAudioEl) {
-          customAudioEl.play().catch(() => {});
-        } else {
-          clearTimeout(shantyTimeout);
-          scheduleNextShantyNote();
-        }
+      if (isPlayingBGM) {
+        eq.classList.add('playing');
+        label.textContent = 'BGM On';
+        if (shantyTimer) clearInterval(shantyTimer);
+        playNextShantyNote();
+        shantyTimer = setInterval(playNextShantyNote, 420);
       } else {
-        ambientGain.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.4);
-        clearTimeout(shantyTimeout);
-        activeSynthOscs.forEach(o => { try { o.stop(); } catch(e){} });
-        activeSynthOscs.clear();
-        if (customAudioEl) customAudioEl.pause();
-      }
-      updateAudioUI();
-    }
-
-    function tryAutoStartBGM() {
-      if (hasAutoStartedBGM) return;
-      hasAutoStartedBGM = true;
-      if (!isAudioPlaying) {
-        toggleAudio();
+        eq.classList.remove('playing');
+        label.textContent = 'Play BGM';
+        if (shantyTimer) {
+          clearInterval(shantyTimer);
+          shantyTimer = null;
+        }
       }
     }
 
-    function playCannonBoom() {
-      if (!audioCtx) return;
-      try {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(120, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(25, audioCtx.currentTime + 0.5);
-
-        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.55);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.6);
-      } catch (e) {}
+    function ensureFirstInteractionAudio() {
+      if (!hasAutoStartedBGM) {
+        hasAutoStartedBGM = true;
+        if (!isPlayingBGM) {
+          toggleAudio();
+        }
+      }
     }
 
-    function playCleanChime(freq = 480) {
-      if (!audioCtx || !isAudioPlaying) return;
-      try {
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, now);
-        
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.linearRampToValueAtTime(0.035, now + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.00001, now + 0.6);
+    function playCannonSound(isSoft) {
+      if (!audioCtx || !isPlayingBGM) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(isSoft ? 120 : 95, now);
+      osc.frequency.exponentialRampToValueAtTime(28, now + 0.28);
 
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + 0.65);
-      } catch (e) {}
+      gain.gain.setValueAtTime(isSoft ? 0.04 : 0.09, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.32);
     }
 
+    // ============================================================================
+    // MAIN 60FPS ANIMATION LOOP & RESPONSIVE RESIZE
+    // ============================================================================
     const clock = new THREE.Clock();
-    let wakeTimer = 0;
 
-    function getWaveHeightAt(x, z, time) {
-      return (
-        Math.sin(x * 0.22 + time * 1.6) * 0.12 +
-        Math.cos(z * 0.25 + time * 1.3) * 0.12
-      );
+    function normalizeAngleDiff(a) {
+      while (a > Math.PI) a -= Math.PI * 2;
+      while (a < -Math.PI) a += Math.PI * 2;
+      return a;
     }
 
     function animate() {
       requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      const elapsed = clock.getElapsedTime();
 
-      const dt = Math.min(clock.getDelta(), 0.1);
-      const elapsedTime = clock.getElapsedTime();
-
-      for (let i = 0; i < oceanPosAttr.count; i++) {
-        const v = oceanBaseVertices[i];
-        const waveY = getWaveHeightAt(v.x, v.z, elapsedTime);
-        oceanPosAttr.setY(i, waveY);
+      // 1. Animate Ocean Waves
+      for (let i = 0; i < waterPosAttr.count; i++) {
+        const orig = waterOrigCoords[i];
+        const waveY = getWaveHeightAt(orig.x, orig.z, elapsed);
+        waterPosAttr.setY(i, waveY);
       }
-      oceanPosAttr.needsUpdate = true;
+      waterPosAttr.needsUpdate = true;
 
-      islandFoamRings.forEach((ring, idx) => {
-        const s = 1 + Math.sin(elapsedTime * 1.8 + idx) * 0.025;
-        ring.scale.set(s, s, 1);
-      });
+      // 2. Manual Keyboard Control or Autopilot Sailing
+      const forwardInput = (keysPressed['KeyW'] || keysPressed['ArrowUp'] ? 1 : 0) - (keysPressed['KeyS'] || keysPressed['ArrowDown'] ? 1 : 0);
+      const turnInput = (keysPressed['KeyA'] || keysPressed['ArrowLeft'] ? 1 : 0) - (keysPressed['KeyD'] || keysPressed['ArrowRight'] ? 1 : 0);
+      const boostMult = (keysPressed['ShiftLeft'] || keysPressed['ShiftRight']) ? 1.65 : 1.0;
 
-      const oldShipPos = galleonGroup.position.clone();
-      const boostMultiplier = shipPhysics.boostActive ? 1.75 : 1.0;
+      if (forwardInput !== 0 || turnInput !== 0) {
+        shipState.hasTarget = false;
+        shipGroup.rotation.y += turnInput * 2.1 * dt;
+        const speed = forwardInput * 6.5 * boostMult;
+        shipState.vx = Math.sin(shipGroup.rotation.y) * speed;
+        shipState.vz = Math.cos(shipGroup.rotation.y) * speed;
+        shipGroup.position.x = THREE.MathUtils.clamp(shipGroup.position.x + shipState.vx * dt, -50, 50);
+        shipGroup.position.z = THREE.MathUtils.clamp(shipGroup.position.z + shipState.vz * dt, -50, 50);
+        spawnWakeFoam(shipGroup.position.x, shipGroup.position.z, elapsed);
+      } else if (shipState.hasTarget) {
+        const dx = shipState.targetX - shipGroup.position.x;
+        const dz = shipState.targetZ - shipGroup.position.z;
+        const dist = Math.hypot(dx, dz);
 
-      if (shipPhysics.mode === 'manual') {
-        ringMat.opacity = Math.max(0, ringMat.opacity - dt * 2.5);
+        if (dist > 0.25) {
+          const desiredAngle = Math.atan2(dx, dz);
+          const angleDiff = normalizeAngleDiff(desiredAngle - shipGroup.rotation.y);
+          shipGroup.rotation.y += angleDiff * Math.min(1, dt * 5.2);
 
-        let turnInput = 0;
-        let throttleInput = 0;
-        if (shipPhysics.keys.a) turnInput += 1;
-        if (shipPhysics.keys.d) turnInput -= 1;
-        if (shipPhysics.keys.w) throttleInput += 1;
-        if (shipPhysics.keys.s) throttleInput -= 0.55;
-
-        const targetYawVel = turnInput * 2.0;
-        shipPhysics.yawVelocity = THREE.MathUtils.lerp(shipPhysics.yawVelocity, targetYawVel, dt * 6);
-        galleonGroup.rotation.y += shipPhysics.yawVelocity * dt;
-
-        const maxSpeed = 8.2 * boostMultiplier;
-        const targetSpeed = throttleInput * maxSpeed;
-        shipPhysics.currentSpeed = THREE.MathUtils.lerp(shipPhysics.currentSpeed, targetSpeed, dt * 4.5);
-
-        const forwardVec = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), galleonGroup.rotation.y);
-        const nextPos = galleonGroup.position.clone().addScaledVector(forwardVec, shipPhysics.currentSpeed * dt);
-
-        let blocked = false;
-        Object.keys(PIRATE_ISLANDS).forEach(k => {
-          const isl = PIRATE_ISLANDS[k];
-          const distToIsl = Math.hypot(nextPos.x - isl.position.x, nextPos.z - isl.position.z);
-          if (distToIsl < 4.1) blocked = true;
-        });
-
-        if (!blocked) {
-          galleonGroup.position.copy(nextPos);
+          const moveSpeed = Math.min(dist * 2.4, 7.2);
+          shipGroup.position.x += Math.sin(shipGroup.rotation.y) * moveSpeed * dt;
+          shipGroup.position.z += Math.cos(shipGroup.rotation.y) * moveSpeed * dt;
+          spawnWakeFoam(shipGroup.position.x, shipGroup.position.z, elapsed);
         } else {
-          shipPhysics.currentSpeed *= 0.5;
-        }
-
-        let closestDist = Infinity;
-        let closestId = activeIslandId;
-        Object.keys(PIRATE_ISLANDS).forEach(k => {
-          const isl = PIRATE_ISLANDS[k];
-          const d = Math.hypot(galleonGroup.position.x - isl.position.x, galleonGroup.position.z - isl.position.z);
-          if (d < closestDist) {
-            closestDist = d;
-            closestId = k;
-          }
-        });
-        if (closestDist < 13 && closestId !== activeIslandId) {
-          activeIslandId = closestId;
-          updateActiveNavUI(closestId, PIRATE_ISLANDS[closestId].name);
-        }
-
-        if (Math.abs(shipPhysics.currentSpeed) > 0.3) {
-          shipStatusText.innerText = `Menavigasi samudra · Shift untuk Full Sail`;
-        } else {
-          shipStatusText.innerText = `Klik pulau atau air laut · WASD / Arrows`;
-        }
-      } else if (shipPhysics.mode === 'autopilot') {
-        const toTarget = new THREE.Vector3().subVectors(shipPhysics.targetPos, galleonGroup.position);
-        const horizDist = Math.hypot(toTarget.x, toTarget.z);
-
-        const pulse = 1 + Math.sin(elapsedTime * 5) * 0.14;
-        targetRing.scale.set(pulse, pulse, 1);
-
-        if (horizDist > 0.32) {
-          const desiredYaw = Math.atan2(-toTarget.x, -toTarget.z);
-          const yawDiff = shortestAngleDiff(galleonGroup.rotation.y, desiredYaw);
-
-          const targetYawVel = THREE.MathUtils.clamp(yawDiff * 3.4, -2.4, 2.4);
-          shipPhysics.yawVelocity = THREE.MathUtils.lerp(shipPhysics.yawVelocity, targetYawVel, dt * 7);
-          galleonGroup.rotation.y += shipPhysics.yawVelocity * dt;
-
-          const maxAutoSpeed = 9.0 * boostMultiplier;
-          const desiredSpeed = Math.min(maxAutoSpeed, horizDist * 2.1 + 0.7);
-          shipPhysics.currentSpeed = THREE.MathUtils.lerp(shipPhysics.currentSpeed, desiredSpeed, dt * 4.5);
-
-          const forwardDir = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), galleonGroup.rotation.y);
-          const directDir = new THREE.Vector3(toTarget.x, 0, toTarget.z).normalize();
-          const moveDir = forwardDir.lerp(directDir, 0.35).normalize();
-
-          galleonGroup.position.addScaledVector(moveDir, Math.min(horizDist, shipPhysics.currentSpeed * dt));
-        } else {
-          shipPhysics.currentSpeed = THREE.MathUtils.lerp(shipPhysics.currentSpeed, 0, dt * 6);
-          ringMat.opacity = Math.max(0, ringMat.opacity - dt * 2.5);
-
-          if (shipPhysics.hasFinalDockYaw) {
-            const dockYawDiff = shortestAngleDiff(galleonGroup.rotation.y, shipPhysics.targetYaw);
-            shipPhysics.yawVelocity = THREE.MathUtils.lerp(shipPhysics.yawVelocity, dockYawDiff * 3.0, dt * 6);
-            galleonGroup.rotation.y += shipPhysics.yawVelocity * dt;
-
-            if (Math.abs(dockYawDiff) < 0.03 && shipPhysics.currentSpeed < 0.1) {
-              shipPhysics.mode = 'idle';
-              shipPhysics.yawVelocity = 0;
-              shipStatusText.innerText = `Berlabuh di ${PIRATE_ISLANDS[activeIslandId].name}`;
+          if (shipState.targetRot !== null) {
+            const rotDiff = normalizeAngleDiff(shipState.targetRot - shipGroup.rotation.y);
+            shipGroup.rotation.y += rotDiff * Math.min(1, dt * 4.5);
+            if (Math.abs(rotDiff) < 0.04) {
+              shipState.hasTarget = false;
+              document.getElementById('ship-status-text').textContent = `Berlabuh di ${PIRATE_ISLANDS[activeIslandId].name}`;
             }
           } else {
-            shipPhysics.mode = 'idle';
-            shipPhysics.yawVelocity = 0;
-            shipStatusText.innerText = `Klik pulau atau air laut · WASD / Arrows`;
+            shipState.hasTarget = false;
+            document.getElementById('ship-status-text').textContent = 'Siap berlayar · Klik pulau atau air laut';
           }
         }
       }
 
-      const seaHeight = getWaveHeightAt(galleonGroup.position.x, galleonGroup.position.z, elapsedTime);
-      galleonGroup.position.y = Math.max(0.35, 0.32 + seaHeight);
+      // 3. Ship Buoyancy on Waves (Never Sinks)
+      const waveY = getWaveHeightAt(shipGroup.position.x, shipGroup.position.z, elapsed);
+      shipGroup.position.y = 0.14 + waveY * 0.65;
+      shipModel.rotation.x = Math.sin(elapsed * 2.1) * 0.035;
 
-      const targetBank = -shipPhysics.yawVelocity * 0.14;
-      shipPhysics.bankAngle = THREE.MathUtils.lerp(shipPhysics.bankAngle, targetBank, dt * 6);
-
-      const targetPitch = THREE.MathUtils.clamp(shipPhysics.currentSpeed * 0.012, -0.06, 0.09) + Math.sin(elapsedTime * 2.2) * 0.025;
-      shipPhysics.pitchAngle = THREE.MathUtils.lerp(shipPhysics.pitchAngle, targetPitch, dt * 5);
-
-      shipInnerMesh.rotation.z = shipPhysics.bankAngle + Math.sin(elapsedTime * 1.5) * 0.03;
-      shipInnerMesh.rotation.x = shipPhysics.pitchAngle;
-
-      if (Math.abs(shipPhysics.currentSpeed) > 1.1) {
-        wakeTimer += dt * (shipPhysics.boostActive ? 16 : 9);
-        if (wakeTimer >= 1) {
-          wakeTimer = 0;
-          spawnWakeParticle(false);
-        }
-      }
-
-      for (let i = wakeParticles.length - 1; i >= 0; i--) {
-        const wp = wakeParticles[i];
-        wp.life -= dt * wp.decay;
-        if (wp.life <= 0) {
-          scene.remove(wp.mesh);
-          wp.mesh.material.dispose();
-          wakeParticles.splice(i, 1);
+      // 4. Animate Island Props, Foam Rings, Clouds & Sea Birds
+      animatedProps.forEach(prop => {
+        if (prop.scalePulse) {
+          const s = 1 + Math.sin(elapsed * 2.0 + prop.phase) * 0.035;
+          prop.mesh.scale.set(s, s, 1);
         } else {
-          if (wp.isWaterRipple) {
-            wp.mesh.scale.multiplyScalar(1 + dt * 1.4);
-            wp.mesh.material.opacity = wp.life * 0.45;
-          } else {
-            wp.mesh.position.addScaledVector(wp.vel, dt);
-            wp.mesh.scale.multiplyScalar(1 + dt * 0.8);
-            wp.mesh.material.opacity = wp.life * 0.6;
-          }
+          prop.mesh.position.y = prop.baseY + Math.abs(Math.sin(elapsed * 2.5 + prop.phase)) * 0.12;
         }
+        if (prop.rotate) {
+          prop.mesh.rotation.y += dt * 1.4;
+        }
+      });
+
+      skyClouds.forEach(c => {
+        c.mesh.position.x += c.speed * dt;
+        if (c.mesh.position.x > 48) c.mesh.position.x = -48;
+      });
+
+      seaBirds.forEach(b => {
+        const ang = elapsed * b.speed + b.phase;
+        b.group.position.set(
+          b.centerX + Math.cos(ang) * b.radius,
+          5.2 + Math.sin(elapsed * 1.8 + b.phase) * 0.45,
+          b.centerZ + Math.sin(ang) * b.radius
+        );
+        b.group.rotation.y = -ang;
+        const flap = Math.sin(elapsed * 9.5 + b.phase) * 0.42;
+        b.leftWing.rotation.z = flap;
+        b.rightWing.rotation.z = -flap;
+      });
+
+      // 5. Smooth Camera Follow
+      if (cameraFollowShip) {
+        camLookTarget.lerp(new THREE.Vector3(shipGroup.position.x, 1.15, shipGroup.position.z), Math.min(1, dt * 5.0));
       }
 
-      if (shipPhysics.cameraFollow) {
-        const shipDelta = new THREE.Vector3().subVectors(galleonGroup.position, oldShipPos);
-        shipDelta.y = 0;
-        camera.position.add(shipDelta);
-        controls.target.add(shipDelta);
+      const sinPhi = Math.sin(camSpherical.phi);
+      const camX = camLookTarget.x + camSpherical.radius * sinPhi * Math.sin(camSpherical.theta);
+      const camY = camLookTarget.y + camSpherical.radius * Math.cos(camSpherical.phi);
+      const camZ = camLookTarget.z + camSpherical.radius * sinPhi * Math.cos(camSpherical.theta);
 
-        const desiredTarget = new THREE.Vector3(galleonGroup.position.x, 0.8, galleonGroup.position.z);
-        controls.target.lerp(desiredTarget, dt * 4.5);
-      }
+      camera.position.set(camX, Math.max(2.2, camY), camZ);
+      camera.lookAt(camLookTarget);
 
-      controls.update();
       updatePins();
       renderer.render(scene, camera);
     }
 
-    window.addEventListener('resize', () => {
-      const mobile = window.innerWidth < 768;
-      camera.fov = mobile ? 54 : 42;
-      camera.aspect = window.innerWidth / window.innerHeight;
+    function handleViewportResize() {
+      const { width, height, isMobile } = getViewportDimensions();
+      camera.fov = isMobile ? 58 : 42;
+      camera.aspect = width / height;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.5 : 2));
-    });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 2, 2.5));
+      renderer.setSize(width, height, false);
+    }
+
+    window.addEventListener('resize', handleViewportResize);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportResize);
+    }
 
     window.onload = function () {
       lucide.createIcons();
+      handleViewportResize();
       updateActiveNavUI('haven', PIRATE_ISLANDS.haven.name);
       showPreviewCard('haven');
       animate();
