@@ -1265,7 +1265,7 @@
     createSeagull(11.5, -10.5, 4.5, 0.8, 3.7);
 
     // ============================================================================
-    // CAPTAIN REZTROID'S SHIP ("THE BLACK REVENGE")
+    // CAPTAIN REZTROID'S SHIP ("THE BLACK REVENGE") - FIXED TAPERED BOW
     // ============================================================================
     const shipGroup = new THREE.Group();
     shipGroup.position.set(-4.5, 0.15, 6.5);
@@ -1274,6 +1274,32 @@
 
     const shipModel = new THREE.Group();
     shipGroup.add(shipModel);
+
+    // Helper for creating a clean tapered V-shaped bow hull mesh
+    function createTaperedBowGeo(widthRear, widthFront, height, length, bottomTaper = 0.75) {
+      const geo = new THREE.BoxGeometry(widthRear, height, length, 1, 1, 1);
+      const pos = geo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const z = pos.getZ(i);
+        const y = pos.getY(i);
+        const x = pos.getX(i);
+
+        // Front vertices (z > 0) taper inward to form a sharp nautical prow
+        if (z > 0) {
+          const xScale = widthFront / widthRear;
+          pos.setX(i, x * xScale);
+          // Slight upward rake on lower front edge (cutwater)
+          if (y < 0) {
+            pos.setZ(i, z * bottomTaper);
+          }
+        } else if (y < 0) {
+          // Slight V-bottom hull shape at the rear seam
+          pos.setX(i, x * 0.86);
+        }
+      }
+      geo.computeVertexNormals();
+      return geo;
+    }
 
     const lowerHull = new THREE.Mesh(new THREE.BoxGeometry(1.32, 0.45, 3.1), materials.woodDark);
     lowerHull.position.y = 0.26;
@@ -1297,20 +1323,44 @@
     hullTrim.position.y = 0.68;
     shipModel.add(hullTrim);
 
-    const bowWedge = new THREE.Mesh(new THREE.ConeGeometry(0.95, 1.25, 4), materials.woodMid);
-    bowWedge.rotation.x = Math.PI / 2;
-    bowWedge.rotation.z = Math.PI / 4;
-    bowWedge.scale.set(0.82, 1, 0.48);
-    bowWedge.position.set(0, 0.58, 2.15);
-    shipModel.add(bowWedge);
+    // Seamless Tapered Bow Hull (replaces awkward rotated cone)
+    const lowerBow = new THREE.Mesh(createTaperedBowGeo(1.32, 0.12, 0.45, 1.05, 0.65), materials.woodDark);
+    lowerBow.position.set(0, 0.26, 2.05);
+    shipModel.add(lowerBow);
 
-    const bowSprit = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.075, 1.75, 7), materials.woodDark);
+    const upperBow = new THREE.Mesh(createTaperedBowGeo(1.56, 0.16, 0.42, 1.25, 0.78), materials.woodMid);
+    upperBow.position.set(0, 0.58, 2.34);
+    shipModel.add(upperBow);
+
+    const bowDeck = new THREE.Mesh(createTaperedBowGeo(1.46, 0.18, 0.08, 1.18, 1.0), materials.woodLight);
+    bowDeck.position.set(0, 0.80, 2.24);
+    shipModel.add(bowDeck);
+
+    const bowTrim = new THREE.Mesh(createTaperedBowGeo(1.62, 0.2, 0.1, 1.26, 0.9), materials.hullTrim);
+    bowTrim.position.set(0, 0.68, 2.35);
+    shipModel.add(bowTrim);
+
+    // Angled Bow Rails (left & right converging toward the prow)
+    [-1, 1].forEach(side => {
+      const bowRail = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.16, 1.18), materials.woodDark);
+      bowRail.position.set(side * 0.43, 0.88, 2.15);
+      bowRail.rotation.y = -side * 0.46;
+      shipModel.add(bowRail);
+    });
+
+    // Curved Prow Stempost & Bowsprit
+    const prowStem = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.72, 0.18), materials.woodDark);
+    prowStem.rotation.x = -0.35;
+    prowStem.position.set(0, 0.62, 2.86);
+    shipModel.add(prowStem);
+
+    const bowSprit = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.075, 1.85, 8), materials.woodDark);
     bowSprit.rotation.x = Math.PI / 2.65;
-    bowSprit.position.set(0, 0.88, 2.38);
+    bowSprit.position.set(0, 1.02, 3.25);
     shipModel.add(bowSprit);
 
-    const figurehead = new THREE.Mesh(new THREE.OctahedronGeometry(0.18, 0), materials.gold);
-    figurehead.position.set(0, 0.68, 2.35);
+    const figurehead = new THREE.Mesh(new THREE.OctahedronGeometry(0.16, 0), materials.gold);
+    figurehead.position.set(0, 0.76, 2.98);
     shipModel.add(figurehead);
 
     const rudder = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.65, 0.38), materials.woodDark);
@@ -1397,7 +1447,7 @@
     shipModel.add(foreSail);
 
     const riggingPoints = [
-      new THREE.Vector3(0, 3.5, 0.12), new THREE.Vector3(0, 1.15, 2.85),
+      new THREE.Vector3(0, 3.5, 0.12), new THREE.Vector3(0, 1.25, 3.85),
       new THREE.Vector3(0, 3.5, 0.12), new THREE.Vector3(-0.72, 0.9, 0.12),
       new THREE.Vector3(0, 3.5, 0.12), new THREE.Vector3(0.72, 0.9, 0.12),
       new THREE.Vector3(0, 3.5, 0.12), new THREE.Vector3(0, 1.45, -1.65)
@@ -1415,7 +1465,7 @@
       });
 
       const anchor = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.03, 5, 8, Math.PI), materials.iron);
-      anchor.position.set(sideX * 0.95, 0.55, 1.55);
+      anchor.position.set(sideX * 0.65, 0.58, 2.15);
       anchor.rotation.y = Math.PI / 2;
       shipModel.add(anchor);
     });
